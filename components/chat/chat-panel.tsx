@@ -8,6 +8,8 @@ import { ChatInput } from "./chat-input"
 import { useLLM } from "@/lib/stores/llm-store"
 import { useChain } from "@/lib/stores/chain-store"
 import { Bot, MessageSquare } from "lucide-react"
+import { isToolUIPart, getToolName } from "ai"
+import { ToolResultRenderer } from "./cards/tool-result-renderer"
 
 export function ChatPanel() {
   const { config, isConfigured } = useLLM()
@@ -77,6 +79,23 @@ export function ChatPanel() {
                 {message.parts.map((part, i) => {
                   if (part.type === "text") {
                     return <span key={i}>{part.text}</span>
+                  }
+                  if (isToolUIPart(part)) {
+                    const toolName = getToolName(part)
+                    if (part.state === "output-available") {
+                      return (
+                        <ToolResultRenderer
+                          key={i}
+                          toolName={toolName}
+                          result={part.output as Record<string, unknown>}
+                        />
+                      )
+                    }
+                    return (
+                      <div key={i} className="text-xs text-muted-foreground animate-pulse my-1">
+                        Calling {toolName}...
+                      </div>
+                    )
                   }
                   return null
                 })}
