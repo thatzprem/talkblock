@@ -3,6 +3,8 @@
 import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card"
 import { Badge } from "@/components/ui/badge"
 import { User, HardDrive, Cpu, Wifi } from "lucide-react"
+import { useDetailContext } from "@/lib/stores/context-store"
+import { usePanels } from "@/lib/stores/panel-store"
 
 interface AccountCardProps {
   data: {
@@ -38,8 +40,11 @@ function ResourceBar({ used, max, label, icon: Icon }: { used: number; max: numb
 }
 
 export function AccountCard({ data }: AccountCardProps) {
+  const { setContext } = useDetailContext()
+  const { openRight } = usePanels()
+
   return (
-    <Card className="my-2 max-w-md cursor-pointer hover:bg-accent/50 transition-colors">
+    <Card onClick={() => { setContext("account", data); openRight() }} className="my-2 max-w-md cursor-pointer hover:bg-accent/50 transition-colors">
       <CardHeader className="pb-2 pt-3 px-4">
         <CardTitle className="text-sm flex items-center gap-2">
           <User className="h-4 w-4" />
