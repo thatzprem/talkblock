@@ -1,6 +1,7 @@
 import { streamText, convertToModelMessages, stepCountIs } from "ai"
 import { createLLMModel } from "@/lib/llm/provider"
 import { createChainTools } from "@/lib/llm/tools"
+import { optimizeMessagesForLLM } from "@/lib/llm/optimize-messages"
 import { createAdminClient } from "@/lib/supabase/server"
 import jwt from "jsonwebtoken"
 
@@ -71,11 +72,15 @@ ${hyperionEndpoint ? "Hyperion history API is available. You can query full acti
 
 ${walletAccount ? `The user's connected wallet account is: ${walletAccount}. When they say "my account", "my balance", etc., use this account name. When building transactions, use this as the "from" account.` : "No wallet connected."}`
 
+  const optimizedMessages = optimizeMessagesForLLM(messages)
+
   const result = streamText({
     model: llmModel,
     system: systemPrompt,
-    messages: await convertToModelMessages(messages),
+    // eslint-disable-next-line @typescript-eslint/no-explicit-any
+    messages: await convertToModelMessages(optimizedMessages as any),
     tools,
+    maxOutputTokens: 4096,
     stopWhen: stepCountIs(5),
   })
 

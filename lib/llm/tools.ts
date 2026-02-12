@@ -162,6 +162,8 @@ export function createChainTools(endpoint: string | null, hyperionEndpoint: stri
           const result = await client.getAbi(account_name)
           const abi = result.abi
           if (!abi) return { error: "No ABI found for this account" }
+          // Only include structs referenced by actions to reduce token usage
+          const actionTypes = new Set(abi.actions?.map((a: any) => a.type) || [])
           return {
             account_name: result.account_name,
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -170,10 +172,12 @@ export function createChainTools(endpoint: string | null, hyperionEndpoint: stri
             actions: abi.actions?.map((a: any) => a.name) || [],
             // eslint-disable-next-line @typescript-eslint/no-explicit-any
             structs:
-              abi.structs?.map((s: any) => ({
-                name: s.name,
-                fields: s.fields,
-              })) || [],
+              abi.structs
+                ?.filter((s: any) => actionTypes.has(s.name))
+                .map((s: any) => ({
+                  name: s.name,
+                  fields: s.fields,
+                })) || [],
           }
         } catch (e) {
           return {
@@ -296,14 +300,25 @@ export function createChainTools(endpoint: string | null, hyperionEndpoint: stri
           const result = await hyperion.getActions({
             account,
             filter,
-            limit: limit || 20,
+            limit: limit || 10,
             skip,
             after,
             before,
             simple: true,
           })
+          // Trim oversized data fields to reduce token usage
+          const actions = (result.simple_actions || result.actions || []).map((a: any) => {
+            if (a.data && JSON.stringify(a.data).length > 500) {
+              const keys = Object.keys(a.data)
+              const trimmed: Record<string, any> = {}
+              for (const k of keys.slice(0, 5)) trimmed[k] = a.data[k]
+              if (keys.length > 5) trimmed._trimmed = `${keys.length - 5} more fields`
+              return { ...a, data: trimmed }
+            }
+            return a
+          })
           return {
-            actions: result.simple_actions || result.actions || [],
+            actions,
             total: result.total || { value: 0, relation: "eq" },
           }
         } catch (e) {
