@@ -493,6 +493,153 @@ export function createChainTools(endpoint: string | null, hyperionEndpoint: stri
         }
       },
     })
+
+    tools.get_deltas = tool({
+      description:
+        "Get historical table state changes (deltas) for any contract. Shows what rows changed in contract tables over time. Filterable by contract, table, scope, payer, and time range.",
+      inputSchema: z.object({
+        code: z.string().optional().describe("Contract account name (e.g. 'eosio.token')"),
+        table: z.string().optional().describe("Table name to filter by"),
+        scope: z.string().optional().describe("Scope to filter by"),
+        payer: z.string().optional().describe("RAM payer to filter by"),
+        limit: z.number().optional().describe("Max results to return (default 20)"),
+        skip: z.number().optional().describe("Number of results to skip for pagination"),
+        sort: z.enum(["asc", "desc"]).optional().describe("Sort order by timestamp"),
+        after: z.string().optional().describe("Only deltas after this ISO8601 date"),
+        before: z.string().optional().describe("Only deltas before this ISO8601 date"),
+      }),
+      execute: async ({ code, table, scope, payer, limit, skip, sort, after, before }) => {
+        try {
+          const result = await hyperion.getDeltas({
+            code, table, scope, payer,
+            limit: limit || 20, skip, sort, after, before,
+          })
+          // Trim oversized data fields to reduce token usage
+          const deltas = (result.deltas || []).map((d: any) => {
+            if (d.data && JSON.stringify(d.data).length > 500) {
+              const keys = Object.keys(d.data)
+              const trimmed: Record<string, any> = {}
+              for (const k of keys.slice(0, 5)) trimmed[k] = d.data[k]
+              if (keys.length > 5) trimmed._trimmed = `${keys.length - 5} more fields`
+              return { ...d, data: trimmed }
+            }
+            return d
+          })
+          return {
+            deltas,
+            total: result.total || { value: 0, relation: "eq" },
+            code: code || "any",
+            table: table || "any",
+          }
+        } catch (e) {
+          return { error: e instanceof Error ? e.message : "Failed to fetch deltas" }
+        }
+      },
+    })
+
+    tools.get_table_state = tool({
+      description:
+        "Reconstruct a contract table's full state at a specific block height (time-travel). Shows what the table looked like at that point in time.",
+      inputSchema: z.object({
+        code: z.string().describe("Contract account name (e.g. 'eosio.token')"),
+        table: z.string().describe("Table name to reconstruct"),
+        block_num: z.number().optional().describe("Block number to reconstruct state at. Omit for latest."),
+        after_key: z.string().optional().describe("Pagination key from previous response's next_key"),
+      }),
+      execute: async ({ code, table, block_num, after_key }) => {
+        try {
+          const result = await hyperion.getTableState({ code, table, block_num, after_key })
+          return {
+            results: result.results || [],
+            code,
+            table,
+            block_num: result.block_num || block_num,
+            next_key: result.next_key || null,
+          }
+        } catch (e) {
+          return { error: e instanceof Error ? e.message : "Failed to fetch table state" }
+        }
+      },
+    })
+
+    tools.get_top_holders = tool({
+      description:
+        "Get the top token holders for a specific token symbol. Shows which accounts hold the most of a given token.",
+      inputSchema: z.object({
+        symbol: z.string().describe("Token symbol (e.g. 'TLOS', 'EOS', 'WAX')"),
+        contract: z.string().optional().describe("Token contract (default: main token contract)"),
+        limit: z.number().optional().describe("Max holders to return (default 50)"),
+      }),
+      execute: async ({ symbol, contract, limit }) => {
+        try {
+          const result = await hyperion.getTopHolders({ symbol, contract, limit })
+          return {
+            holders: result.holders || [],
+            symbol,
+          }
+        } catch (e) {
+          return { error: e instanceof Error ? e.message : "Failed to fetch top holders" }
+        }
+      },
+    })
+
+    tools.get_voters = tool({
+      description:
+        "Get accounts that are voting for a specific block producer. Shows voter details including vote weight.",
+      inputSchema: z.object({
+        producer: z.string().describe("Block producer account name"),
+        limit: z.number().optional().describe("Max voters to return (default 50)"),
+        skip: z.number().optional().describe("Number of results to skip for pagination"),
+      }),
+      execute: async ({ producer, limit, skip }) => {
+        try {
+          const result = await hyperion.getVoters({ producer, limit, skip })
+          return {
+            voters: result.voters || [],
+            producer,
+          }
+        } catch (e) {
+          return { error: e instanceof Error ? e.message : "Failed to fetch voters" }
+        }
+      },
+    })
+
+    tools.get_proposals = tool({
+      description:
+        "Get multisig (MSIG) proposals. Can filter by proposer or by an account involved in the proposal.",
+      inputSchema: z.object({
+        proposer: z.string().optional().describe("Filter by proposer account name"),
+        account: z.string().optional().describe("Filter by account involved in the proposal"),
+        executed: z.boolean().optional().describe("Filter by execution status (true=executed, false=pending)"),
+      }),
+      execute: async ({ proposer, account, executed }) => {
+        try {
+          const result = await hyperion.getProposals({ proposer, account, executed })
+          return { proposals: result.proposals || [] }
+        } catch (e) {
+          return { error: e instanceof Error ? e.message : "Failed to fetch proposals" }
+        }
+      },
+    })
+
+    tools.get_links = tool({
+      description:
+        "Get permission links for an account. Shows which permissions are linked to specific contract actions.",
+      inputSchema: z.object({
+        account: z.string().describe("Account name to get permission links for"),
+      }),
+      execute: async ({ account }) => {
+        try {
+          const result = await hyperion.getLinks({ account })
+          return {
+            links: result.links || [],
+            account,
+          }
+        } catch (e) {
+          return { error: e instanceof Error ? e.message : "Failed to fetch permission links" }
+        }
+      },
+    })
   }
 
   return tools

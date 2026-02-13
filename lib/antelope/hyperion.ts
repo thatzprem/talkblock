@@ -77,12 +77,36 @@ export class HyperionClient {
     scope?: string
     table?: string
     payer?: string
+    limit?: number
+    skip?: number
+    sort?: "asc" | "desc"
+    after?: string
+    before?: string
   }) {
     return this.query("/v2/history/get_deltas", {
       code: params.code,
       scope: params.scope,
       table: params.table,
       payer: params.payer,
+      limit: params.limit,
+      skip: params.skip,
+      sort: params.sort,
+      after: params.after,
+      before: params.before,
+    })
+  }
+
+  async getTableState(params: {
+    code: string
+    table: string
+    block_num?: number
+    after_key?: string
+  }) {
+    return this.query("/v2/history/get_table_state", {
+      code: params.code,
+      table: params.table,
+      block_num: params.block_num,
+      after_key: params.after_key,
     })
   }
 
@@ -114,6 +138,24 @@ export class HyperionClient {
 
   async getKeyAccounts(publicKey: string) {
     return this.query("/v2/state/get_key_accounts", { public_key: publicKey })
+  }
+
+  async getTopHolders(params: {
+    symbol: string
+    contract?: string
+    limit?: number
+  }) {
+    return this.query("/v2/state/get_top_holders", {
+      symbol: params.symbol,
+      contract: params.contract,
+      limit: params.limit,
+    })
+  }
+
+  async getLinks(params: { account: string }) {
+    return this.query("/v2/state/get_links", {
+      account: params.account,
+    })
   }
 
   async getProposals(params: {
