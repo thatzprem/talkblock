@@ -319,6 +319,12 @@ export function ChatPanel() {
               .map((message, idx) => (
               <ChatMessage key={`${message.id}-${idx}`} role={message.role as "user" | "assistant"}>
                 {message.parts.map((part, i) => {
+                  // Deduplicate build_transaction: if LLM called it multiple times in one message, only show the last one
+                  if (isToolUIPart(part) && getToolName(part) === "build_transaction" && part.state === "output-available") {
+                    const lastTxIdx = message.parts.reduce((last, p, idx) =>
+                      isToolUIPart(p) && getToolName(p) === "build_transaction" && p.state === "output-available" ? idx : last, -1)
+                    if (i !== lastTxIdx) return null
+                  }
                   if (part.type === "text") {
                     if (message.role === "assistant") {
                       // Bookmark age labels — render as subtle timestamp

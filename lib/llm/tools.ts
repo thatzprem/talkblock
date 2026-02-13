@@ -125,6 +125,22 @@ export function createChainTools(endpoint: string | null, hyperionEndpoint: stri
           .describe("Max rows to return (default 10)"),
         lower_bound: z.string().optional().describe("Lower bound for key"),
         upper_bound: z.string().optional().describe("Upper bound for key"),
+        index_position: z
+          .string()
+          .optional()
+          .describe(
+            "Secondary index position (e.g. '2' for first secondary index). Default '1' is the primary key."
+          ),
+        key_type: z
+          .string()
+          .optional()
+          .describe(
+            "Key type for secondary index (e.g. 'i64', 'i128', 'name', 'sha256')"
+          ),
+        reverse: z
+          .boolean()
+          .optional()
+          .describe("Return rows in reverse order (newest first)"),
       }),
       execute: async ({
         code,
@@ -133,16 +149,36 @@ export function createChainTools(endpoint: string | null, hyperionEndpoint: stri
         limit,
         lower_bound,
         upper_bound,
+        index_position,
+        key_type,
+        reverse,
       }) => {
         try {
-          return await client.getTableRows({
+          const logLine1 = `[${new Date().toISOString()}] [get_table_rows] LLM called with: ${JSON.stringify({ code, table, scope, limit, lower_bound, upper_bound, index_position, key_type, reverse })}\n`
+          console.log(logLine1.trim())
+          require("fs").appendFileSync("/tmp/llm-tool-calls.log", logLine1)
+          const result = await client.getTableRows({
             code,
             table,
             scope,
             limit,
             lower_bound,
             upper_bound,
+            index_position,
+            key_type,
+            reverse,
           })
+          const logLine2 = `[${new Date().toISOString()}] [get_table_rows] Returned ${result.rows?.length ?? 0} rows\n`
+          console.log(logLine2.trim())
+          require("fs").appendFileSync("/tmp/llm-tool-calls.log", logLine2)
+          return {
+            code,
+            table,
+            scope,
+            ...(lower_bound ? { lower_bound } : {}),
+            ...(upper_bound ? { upper_bound } : {}),
+            ...result,
+          }
         } catch (e) {
           return {
             error:
@@ -282,13 +318,16 @@ export function createChainTools(endpoint: string | null, hyperionEndpoint: stri
 
     get_contract_guide: tool({
       description:
-        "Look up a curated guide for interacting with a specific smart contract. Returns detailed action workflows, parameter formats, table scopes, and common gotchas. ALWAYS call this before building transactions for non-trivial contracts to ensure correct parameter formats and action sequences.",
+        "Look up a curated guide for interacting with a specific smart contract. Returns detailed action workflows, parameter formats, table query patterns (correct scope, lower_bound, upper_bound), and common gotchas. ALWAYS call this before querying contract-specific tables (like REX, staking, NFTs) or building transactions. The guide tells you exactly which table, scope, and bounds to use.",
       inputSchema: z.object({
         contract: z
           .string()
           .describe("The contract account name (e.g. 'eosio.system', 'eosio.token', 'atomicassets')"),
       }),
       execute: async ({ contract }) => {
+        const guideLog = `[${new Date().toISOString()}] [get_contract_guide] LLM requested guide for: ${contract}\n`
+        console.log(guideLog.trim())
+        require("fs").appendFileSync("/tmp/llm-tool-calls.log", guideLog)
         const guide = getContractGuide(contract, chainName || undefined)
         if (guide) {
           return {
