@@ -116,6 +116,7 @@ REX lets users lend tokens to earn staking rewards, and renters can cheaply get 
   - rex: "1000.0000 REX" (amount of REX to sell — note REX has 4 decimal precision)
 - NOTE: REX must be matured (4 days after purchase). If not enough liquid REX is available, the sell order is queued.
 - IMPORTANT: Before building sellrex, ALWAYS query rexbal first (get_table_rows code="eosio", table="rexbal", scope="eosio", lower_bound=account, upper_bound=account) to get the user's actual rex_balance. Use that value for the rex field.
+- FOLLOW-UP: When a user asks to sell REX, ask them: "Do you also want to withdraw the proceeds from your REX fund?" If yes, build a SINGLE multi-action transaction with both sellrex AND withdraw. Actions execute sequentially within a transaction, so withdraw will see the updated rexfund balance from sellrex. Query rexfund before building to get the current balance — the withdraw amount should be the current rexfund balance (proceeds from sellrex will be added on-chain).
 
 ### unstaketorex — Convert staked tokens directly to REX
 - account: "eosio"
