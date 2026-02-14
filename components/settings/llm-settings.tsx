@@ -19,6 +19,7 @@ const BYOK_PROVIDERS: { value: LLMProviderType; label: string }[] = [
   { value: "anthropic", label: "Anthropic (Claude)" },
   { value: "openai", label: "OpenAI (GPT)" },
   { value: "google", label: "Google (Gemini)" },
+  { value: "chutes", label: "Chutes" },
 ]
 
 function BuiltinPanel() {
