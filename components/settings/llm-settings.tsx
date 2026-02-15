@@ -67,7 +67,6 @@ function BuiltinPanel() {
 
 function BYOKPanel() {
   const { config, hasApiKey, isConfigured, setProvider, setApiKey, setModel, getModelsForProvider } = useLLM()
-  const { user } = useAuth()
   const [apiKeyInput, setApiKeyInput] = useState("")
   const [saving, setSaving] = useState(false)
   const [saved, setSaved] = useState(false)
@@ -85,8 +84,7 @@ function BYOKPanel() {
     }
   }
 
-  // Filter out chutes from BYOK providers
-  const provider = config?.provider && config.provider !== "chutes" ? config.provider : ""
+  const provider = config?.provider || ""
 
   return (
     <div className="space-y-4">
@@ -135,7 +133,7 @@ function BYOKPanel() {
               </Button>
             </div>
             <p className="text-xs text-muted-foreground mt-1">
-              {user ? "Stored securely on server. Never exposed to the browser after saving." : "Stored locally in your browser. Connect a wallet to save securely on server."}
+              Stored locally in your browser. Never sent to our server.
             </p>
           </div>
           <div>
@@ -147,7 +145,7 @@ function BYOKPanel() {
               <SelectContent>
                 {getModelsForProvider(provider as LLMProviderType).map((m) => (
                   <SelectItem key={m} value={m}>
-                    {m}
+                    {CHUTES_MODEL_LABELS[m] || m}
                   </SelectItem>
                 ))}
               </SelectContent>

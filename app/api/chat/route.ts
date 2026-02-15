@@ -49,12 +49,9 @@ export async function POST(req: Request) {
         const defaultModel = await getAppConfig("chutes_default_model", "deepseek-ai/DeepSeek-V3-0324")
         llmModelName = settings?.llm_model || defaultModel
         billingMode = usageCheck.mode
-      } else if (settings?.llm_provider && settings?.llm_api_key && settings?.llm_model) {
-        // BYOK mode with server-stored keys
-        llmProvider = settings.llm_provider
-        llmApiKey = settings.llm_api_key
-        llmModelName = settings.llm_model
-        billingMode = "byok"
+      } else if (llmMode === "byok") {
+        // BYOK mode: keys come from client request body, not server
+        // Fall through to body config below
       }
     } catch {
       // Token invalid or DB error — fall through to body config

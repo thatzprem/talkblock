@@ -23,6 +23,10 @@ export const CHUTES_MODEL_LABELS: Record<string, string> = {
   "moonshotai/Kimi-K2-Thinking-TEE": "Kimi K2 Thinking TEE",
 }
 
+function apiKeyStorageKey(provider: string) {
+  return `llm_api_key_${provider}`
+}
+
 interface LLMState {
   config: LLMConfig | null
   hasApiKey: boolean
@@ -47,20 +51,26 @@ export function LLMProvider({ children }: { children: ReactNode }) {
 
   const isAuthed = !!user
 
-  // Load config from localStorage on mount (always the client-side source of truth)
+  // Load config from localStorage on mount
   useEffect(() => {
     const provider = localStorage.getItem("llm_provider") as LLMProviderType | null
     const model = localStorage.getItem("llm_model")
-    const key = localStorage.getItem("llm_api_key")
     const mode = localStorage.getItem("llm_mode") as LLMMode | null
     if (provider && model) {
       setConfig({ provider, model })
+      setHasApiKey(!!localStorage.getItem(apiKeyStorageKey(provider)))
     }
-    setHasApiKey(!!key)
+    // Migrate old single key to per-provider if it exists
+    const legacyKey = localStorage.getItem("llm_api_key")
+    if (legacyKey && provider) {
+      localStorage.setItem(apiKeyStorageKey(provider), legacyKey)
+      localStorage.removeItem("llm_api_key")
+      setHasApiKey(true)
+    }
     if (mode) setLLMModeState(mode)
   }, [])
 
-  // When authed, also sync from server (server may have settings from another session)
+  // When authed, sync non-key settings from server
   useEffect(() => {
     if (!isAuthed) return
     const token = localStorage.getItem("auth_token")
@@ -70,7 +80,6 @@ export function LLMProvider({ children }: { children: ReactNode }) {
     })
       .then((r) => r.json())
       .then((data) => {
-        // Sync llm_mode from server
         const serverMode = data.llm_mode || "builtin"
         setLLMModeState(serverMode)
         localStorage.setItem("llm_mode", serverMode)
@@ -79,15 +88,12 @@ export function LLMProvider({ children }: { children: ReactNode }) {
           setConfig({ provider: data.llm_provider, model: data.llm_model })
           localStorage.setItem("llm_provider", data.llm_provider)
           localStorage.setItem("llm_model", data.llm_model)
+          setHasApiKey(!!localStorage.getItem(apiKeyStorageKey(data.llm_provider)))
         } else if (serverMode === "builtin") {
-          // Default to first Chutes model for builtin mode
           const defaultModel = DEFAULT_MODELS.chutes[0]
           setConfig({ provider: "chutes", model: defaultModel })
           localStorage.setItem("llm_provider", "chutes")
           localStorage.setItem("llm_model", defaultModel)
-        }
-        if (data.has_api_key) {
-          setHasApiKey(true)
         }
       })
       .catch(console.error)
@@ -111,7 +117,6 @@ export function LLMProvider({ children }: { children: ReactNode }) {
     setLLMModeState(mode)
     localStorage.setItem("llm_mode", mode)
     if (mode === "builtin") {
-      // Set default Chutes model
       const defaultModel = DEFAULT_MODELS.chutes[0]
       setConfig({ provider: "chutes", model: defaultModel })
       localStorage.setItem("llm_provider", "chutes")
@@ -133,14 +138,16 @@ export function LLMProvider({ children }: { children: ReactNode }) {
     setConfig(newConfig)
     localStorage.setItem("llm_provider", provider)
     localStorage.setItem("llm_model", models[0])
+    setHasApiKey(!!localStorage.getItem(apiKeyStorageKey(provider)))
     if (isAuthed) syncToServer({ llm_provider: provider, llm_model: models[0] })
   }, [isAuthed, syncToServer])
 
   const setApiKey = useCallback(async (apiKey: string) => {
-    localStorage.setItem("llm_api_key", apiKey)
+    const provider = localStorage.getItem("llm_provider")
+    if (!provider) return
+    localStorage.setItem(apiKeyStorageKey(provider), apiKey)
     setHasApiKey(!!apiKey)
-    if (isAuthed) syncToServer({ llm_api_key: apiKey })
-  }, [isAuthed, syncToServer])
+  }, [])
 
   const setModel = useCallback((model: string) => {
     if (!config) return
@@ -154,18 +161,16 @@ export function LLMProvider({ children }: { children: ReactNode }) {
     return DEFAULT_MODELS[provider]
   }, [])
 
-  // Returns client-side LLM config (for chat requests without auth token)
-  // Returns null for built-in mode (server handles everything)
   const getClientConfig = useCallback(() => {
     if (llmMode === "builtin") return null
     const provider = localStorage.getItem("llm_provider")
     const model = localStorage.getItem("llm_model")
-    const apiKey = localStorage.getItem("llm_api_key")
-    if (!provider || !model || !apiKey) return null
+    if (!provider || !model) return null
+    const apiKey = localStorage.getItem(apiKeyStorageKey(provider))
+    if (!apiKey) return null
     return { provider, model, apiKey }
   }, [llmMode])
 
-  // isConfigured: builtin mode just needs a logged-in user; BYOK needs provider+model+key
   const isConfigured = llmMode === "builtin"
     ? !!user
     : !!(config?.provider && config?.model && hasApiKey)
