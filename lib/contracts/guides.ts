@@ -11,6 +11,7 @@ import { atomicassets } from "./guides/atomicassets"
 import { telosDecide } from "./guides/telos-decide"
 import { dgoods } from "./guides/dgoods"
 import { resPink } from "./guides/res-pink"
+import { thezeosalias } from "./guides/thezeosalias"
 
 export const GUIDES: ContractGuide[] = [
   eosioSystem,
@@ -20,4 +21,5 @@ export const GUIDES: ContractGuide[] = [
   telosDecide,
   dgoods,
   resPink,
+  thezeosalias,
 ]
