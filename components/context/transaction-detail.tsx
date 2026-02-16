@@ -3,7 +3,7 @@
 import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { ArrowRightLeft, Link2, Check } from "lucide-react"
+import { ArrowRightLeft, Link2, Check, Copy } from "lucide-react"
 import { useChain } from "@/lib/stores/chain-store"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
@@ -30,6 +30,7 @@ function getStatus(data: Record<string, unknown>): string {
 export function TransactionDetail({ data }: TransactionDetailProps) {
   const { chainName } = useChain()
   const [copied, setCopied] = useState(false)
+  const [idCopied, setIdCopied] = useState(false)
 
   const status = getStatus(data)
   const actions = ((data.actions || []) as Record<string, unknown>[]).map(normalizeAction)
@@ -54,6 +55,17 @@ export function TransactionDetail({ data }: TransactionDetailProps) {
       <div className="space-y-1">
         <div className="flex items-center gap-1">
           <span className="text-xs text-muted-foreground">Transaction ID</span>
+          <button
+            onClick={() => {
+              navigator.clipboard.writeText(data.id)
+              setIdCopied(true)
+              setTimeout(() => setIdCopied(false), 2000)
+            }}
+            className="p-0.5 rounded hover:bg-accent transition-colors"
+            title="Copy transaction ID"
+          >
+            {idCopied ? <Check className="h-3 w-3 text-green-500" /> : <Copy className="h-3 w-3 text-muted-foreground" />}
+          </button>
           <button
             onClick={copyLink}
             className="p-0.5 rounded hover:bg-accent transition-colors"
