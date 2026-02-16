@@ -103,6 +103,33 @@ export function MarkdownContent({ content }: MarkdownContentProps) {
         ol: ({ children }) => (
           <ol className="list-decimal pl-4 my-1 space-y-0.5">{children}</ol>
         ),
+        strong: ({ children }) => {
+          const raw = String(children).trim()
+          const text = stripPermission(raw)
+          if (isTxId(text)) {
+            return (
+              <strong
+                className="text-primary cursor-pointer"
+                onClick={() => lookupTx(text)}
+                title="View transaction details"
+              >
+                {children}
+              </strong>
+            )
+          }
+          if (isAccountName(text)) {
+            return (
+              <strong
+                className="text-primary cursor-pointer"
+                onClick={() => lookupAccount(text)}
+                title="View account details"
+              >
+                {children}
+              </strong>
+            )
+          }
+          return <strong>{children}</strong>
+        },
         p: ({ children }) => <p className="my-1">{children}</p>,
         h1: ({ children }) => (
           <h1 className="text-base font-bold mt-3 mb-1">{children}</h1>
