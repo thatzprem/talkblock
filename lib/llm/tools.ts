@@ -10,6 +10,13 @@ export function createChainTools(endpoint: string | null, hyperionEndpoint: stri
   const client = new AntelopeClient(endpoint)
 
   const tools: ToolSet = {
+    get_current_time: tool({
+      description: "Get the current date and time in UTC. Use this when the user asks about recent activity, time-based filtering, or anything requiring the current time.",
+      inputSchema: z.object({}),
+      execute: async () => {
+        return { utc: new Date().toISOString() }
+      },
+    }),
     get_account: tool({
       description:
         "Get detailed information about an Antelope blockchain account including balances, resources (RAM, CPU, NET), and permissions.",
