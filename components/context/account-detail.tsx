@@ -1,8 +1,9 @@
 "use client"
 
+import { useState } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { User, HardDrive, Cpu, Wifi, Key, Shield } from "lucide-react"
+import { User, HardDrive, Cpu, Wifi, Key, Shield, Copy, Check } from "lucide-react"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface AccountDetailProps {
@@ -47,6 +48,7 @@ function ResourceDetail({ label, used, max, icon: Icon }: { label: string; used:
 }
 
 export function AccountDetail({ data }: AccountDetailProps) {
+  const [copied, setCopied] = useState(false)
   const ram = data.ram || { used: 0, quota: 0 }
   const cpu = data.cpu || { used: 0, available: 0, max: 0 }
   const net = data.net || { used: 0, available: 0, max: 0 }
@@ -56,6 +58,17 @@ export function AccountDetail({ data }: AccountDetailProps) {
       <div className="flex items-center gap-2">
         <User className="h-5 w-5" />
         <h2 className="text-lg font-semibold">{data.account_name}</h2>
+        <button
+          onClick={() => {
+            navigator.clipboard.writeText(data.account_name)
+            setCopied(true)
+            setTimeout(() => setCopied(false), 2000)
+          }}
+          className="p-0.5 rounded hover:bg-accent transition-colors"
+          title="Copy account name"
+        >
+          {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5 text-muted-foreground" />}
+        </button>
       </div>
 
       <div className="flex items-center gap-2">
