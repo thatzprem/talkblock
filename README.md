@@ -15,8 +15,10 @@ Chat-first blockchain explorer for [Antelope](https://antelope.io) chains. Ask q
 - **Contract guides** -- 8 curated guides (eosio.token, eosio, eosio.msig, atomicassets, telos.decide, dgoods, res.pink, thezeosalias) the LLM loads on-demand for accurate transaction building
 - **24 LLM tools** -- 9 core RPC tools + 15 Hyperion-powered tools including actions, transfers, tokens, deltas, voters, proposals, and more
 - **Shareable transaction links** -- Copy a shareable URL for any transaction; opening the link auto-connects to the chain and looks up the transaction
-- **Clickable entities** -- Account names and transaction IDs in chat responses are clickable, opening a detail panel with full account/transaction info
-- **Detail panel** -- Right-side panel shows account resources, permissions, staking, voting info, or transaction actions and status
+- **Clickable entities** -- Account names, transaction IDs, table names, and action names in chat responses are clickable, opening the relevant detail panel
+- **Detail panel** -- Right-side panel for accounts (resources, permissions, staking, voting), transactions (actions, status), tables (full data with query controls), and actions (fill fields and sign)
+- **Table explorer** -- Click any table name to open it in the detail panel; change scope, bounds, and sort order; toggle between table view (with column picker) and card view for wide tables; load more rows with pagination
+- **Action builder** -- Click any action name from an ABI to open a form with typed input fields; sign and broadcast directly from the panel with wallet integration
 - **Wallet integration** -- Connect via Anchor wallet (Wharfkit) to sign and broadcast transactions; cleos command preview with copy button
 - **Health monitoring** -- Sidebar status dots for each chain: green (RPC + Hyperion), yellow (RPC only), orange (Hyperion only), red (none); checks every 5 minutes
 - **Light/Dark theme** -- Toggle between themes, preference persists across sessions
@@ -89,7 +91,7 @@ app/
   login/            -- Chain selection page
 components/
   chat/             -- Chat panel, message rendering, tool result cards
-  context/          -- Detail panel components (account, transaction, block)
+  context/          -- Detail panel components (account, transaction, block, table, action)
   dashboard/        -- Dashboard view and card components
   layout/           -- App shell, header, sidebar, right detail panel
   chain/            -- Chain selector
