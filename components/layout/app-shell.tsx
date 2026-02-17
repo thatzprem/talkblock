@@ -15,6 +15,7 @@ import { LeftPanel } from "./left-panel"
 import { RightPanel } from "./right-panel"
 import { Github } from "lucide-react"
 import { FeedbackDialog } from "@/components/feedback/feedback-dialog"
+import { FaqDialog } from "@/components/faq/faq-dialog"
 
 export function AppShell({ children }: { children: React.ReactNode }) {
   return (
@@ -40,6 +41,7 @@ export function AppShell({ children }: { children: React.ReactNode }) {
                 <footer className="border-t px-4 py-1.5 flex items-center justify-between text-[11px] text-muted-foreground/60 shrink-0">
                   <span>Talkblock is experimental. AI responses may be inaccurate. Always verify transactions before signing.</span>
                   <div className="flex items-center gap-3 shrink-0 ml-4">
+                    <FaqDialog />
                     <FeedbackDialog />
                     <a
                       href="https://github.com/sdabas9/talkblock"
