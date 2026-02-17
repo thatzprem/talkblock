@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { User, HardDrive, Cpu, Wifi, Key, Shield, Copy, Check, Database, Zap, Loader2, FileCode } from "lucide-react"
+import { User, HardDrive, Cpu, Wifi, Key, Shield, Copy, Check, Database, Zap, Loader2, FileCode, Link2 } from "lucide-react"
 import { useChain } from "@/lib/stores/chain-store"
 import { useDetailContext } from "@/lib/stores/context-store"
 
@@ -56,7 +56,8 @@ interface AbiData { tables: AbiTable[]; actions: AbiAction[]; structs: AbiStruct
 
 export function AccountDetail({ data }: AccountDetailProps) {
   const [copied, setCopied] = useState(false)
-  const { endpoint } = useChain()
+  const [linkCopied, setLinkCopied] = useState(false)
+  const { endpoint, chainName } = useChain()
   const { setContext } = useDetailContext()
   const [abi, setAbi] = useState<AbiData | null>(null)
   const [abiLoading, setAbiLoading] = useState(false)
@@ -130,6 +131,18 @@ export function AccountDetail({ data }: AccountDetailProps) {
           title="Copy account name"
         >
           {copied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Copy className="h-3.5 w-3.5 text-muted-foreground" />}
+        </button>
+        <button
+          onClick={() => {
+            const url = `${window.location.origin}/?chain=${encodeURIComponent(chainName || "")}&account=${encodeURIComponent(data.account_name)}`
+            navigator.clipboard.writeText(url)
+            setLinkCopied(true)
+            setTimeout(() => setLinkCopied(false), 2000)
+          }}
+          className="p-0.5 rounded hover:bg-accent transition-colors"
+          title="Copy shareable link"
+        >
+          {linkCopied ? <Check className="h-3.5 w-3.5 text-green-500" /> : <Link2 className="h-3.5 w-3.5 text-muted-foreground" />}
         </button>
       </div>
 
