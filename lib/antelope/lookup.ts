@@ -29,6 +29,19 @@ export async function fetchAccountData(name: string, endpoint: string) {
   return res.json()
 }
 
+export async function fetchBlockData(blockNumOrId: string, endpoint: string) {
+  const res = await fetch("/api/lookup", {
+    method: "POST",
+    headers: { "Content-Type": "application/json" },
+    body: JSON.stringify({ type: "block", id: blockNumOrId, endpoint }),
+  })
+  if (!res.ok) {
+    const err = await res.json().catch(() => ({ error: "Lookup failed" }))
+    throw new Error(err.error || "Lookup failed")
+  }
+  return res.json()
+}
+
 export async function fetchTxData(
   txId: string,
   endpoint: string | null,

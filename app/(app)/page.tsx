@@ -6,19 +6,26 @@ import { ChatPanel } from "@/components/chat/chat-panel"
 import { DashboardView } from "@/components/dashboard/dashboard-view"
 import { usePanels } from "@/lib/stores/panel-store"
 import { useChain } from "@/lib/stores/chain-store"
+import { useDetailContext } from "@/lib/stores/context-store"
+import { fetchAccountData, fetchBlockData, fetchTxData } from "@/lib/antelope/lookup"
 
-function TxParamHandler() {
+function DeepLinkHandler() {
   const searchParams = useSearchParams()
   const router = useRouter()
-  const { presets, connect, chainName, connecting } = useChain()
+  const { presets, connect, chainName, endpoint, hyperionEndpoint, connecting } = useChain()
   const { setView } = usePanels()
+  const { setContext } = useDetailContext()
   const handledRef = useRef(false)
 
   const txParam = searchParams.get("tx")
+  const accountParam = searchParams.get("account")
+  const blockParam = searchParams.get("block")
   const chainParam = searchParams.get("chain")
 
+  const hasParam = txParam || accountParam || blockParam
+
   useEffect(() => {
-    if (!txParam || handledRef.current) return
+    if (!hasParam || handledRef.current) return
 
     // If we need to connect to a different chain first, do that
     if (chainParam && chainParam !== chainName) {
@@ -29,15 +36,32 @@ function TxParamHandler() {
       }
     }
 
-    // If still connecting, wait
-    if (connecting) return
+    // If still connecting or no endpoint yet, wait
+    if (connecting || !endpoint) return
 
-    // Connected — store the pending lookup for ChatPanel to pick up
     handledRef.current = true
+    // Set cookie so middleware won't redirect on subsequent navigations
+    document.cookie = "chain_selected=1; path=/; max-age=31536000; SameSite=Lax"
     setView("chat")
-    sessionStorage.setItem("pending_tx_lookup", txParam)
     router.replace("/")
-  }, [txParam, chainParam, chainName, connecting, presets, connect, setView, router])
+
+    // Fetch and open detail panel directly (no LLM needed)
+    if (accountParam) {
+      fetchAccountData(accountParam, endpoint)
+        .then((data) => setContext("account", data))
+        .catch(() => {})
+    }
+    if (blockParam) {
+      fetchBlockData(blockParam, endpoint)
+        .then((data) => setContext("block", data))
+        .catch(() => {})
+    }
+    if (txParam) {
+      fetchTxData(txParam, endpoint, hyperionEndpoint)
+        .then((data) => { if (data) setContext("transaction", data) })
+        .catch(() => {})
+    }
+  }, [hasParam, txParam, accountParam, blockParam, chainParam, chainName, endpoint, hyperionEndpoint, connecting, presets, connect, setView, setContext, router])
 
   return null
 }
@@ -47,7 +71,7 @@ export default function Home() {
   return (
     <>
       <Suspense>
-        <TxParamHandler />
+        <DeepLinkHandler />
       </Suspense>
       <div className={view === "chat" ? "flex flex-col flex-1 overflow-hidden" : "hidden"}>
         <ChatPanel />

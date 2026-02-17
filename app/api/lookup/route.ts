@@ -60,6 +60,28 @@ export async function POST(req: NextRequest) {
       }
     }
 
+    if (type === "abi") {
+      if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 })
+      const client = new AntelopeClient(endpoint)
+      const result = await client.getAbi(id)
+      return NextResponse.json({ abi: result.abi || null })
+    }
+
+    if (type === "block") {
+      if (!id) return NextResponse.json({ error: "Missing id" }, { status: 400 })
+      const client = new AntelopeClient(endpoint)
+      const block = await client.getBlock(id)
+      return NextResponse.json({
+        block_num: block.block_num,
+        id: block.id,
+        timestamp: block.timestamp,
+        producer: block.producer,
+        confirmed: block.confirmed,
+        transaction_count: block.transactions?.length ?? 0,
+        transactions: block.transactions?.slice(0, 50) ?? [],
+      })
+    }
+
     if (type === "table") {
       const { code, table, scope, limit, lower_bound, upper_bound, reverse } = body
       if (!code || !table) {
