@@ -22,21 +22,32 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { PanelLeft, MessageSquare, Plus, Trash2, LayoutDashboard, Sun, Moon, Settings, Link2, Bot } from "lucide-react"
+import { PanelLeft, MessageSquare, Plus, Trash2, LayoutDashboard, Sun, Moon, SunMoon, Settings, Link2, Bot } from "lucide-react"
 import { useState, useEffect } from "react"
 
+type Theme = "light" | "dusk" | "dim" | "dark"
+const THEME_CYCLE: Theme[] = ["light", "dusk", "dim", "dark"]
+const THEME_LABELS: Record<Theme, string> = {
+  light: "Light", dusk: "Dusk", dim: "Dim", dark: "Dark",
+}
+const DARK_CLASSES: Theme[] = ["dusk", "dim", "dark"]
+
 function useTheme() {
-  const [dark, setDark] = useState(true)
+  const [theme, setTheme] = useState<Theme>("dark")
   useEffect(() => {
-    setDark(document.documentElement.classList.contains("dark"))
+    const el = document.documentElement
+    const found = DARK_CLASSES.find((c) => el.classList.contains(c))
+    setTheme((found as Theme) || "light")
   }, [])
-  const toggle = () => {
-    const next = !dark
-    setDark(next)
-    document.documentElement.classList.toggle("dark", next)
-    localStorage.setItem("theme", next ? "dark" : "light")
+  const cycle = () => {
+    const idx = THEME_CYCLE.indexOf(theme)
+    const next = THEME_CYCLE[(idx + 1) % THEME_CYCLE.length]
+    setTheme(next)
+    document.documentElement.classList.remove(...DARK_CLASSES)
+    if (next !== "light") document.documentElement.classList.add(next)
+    localStorage.setItem("theme", next)
   }
-  return { dark, toggle }
+  return { theme, cycle, label: THEME_LABELS[theme] }
 }
 
 function UsageIndicator() {
@@ -188,8 +199,9 @@ export function Header() {
           </DropdownMenu>
         )}
         <WalletButton />
-        <Button variant="ghost" size="icon" onClick={theme.toggle}>
-          {theme.dark ? <Sun className="h-4 w-4" /> : <Moon className="h-4 w-4" />}
+        <Button variant="ghost" size="sm" onClick={theme.cycle} title={`Theme: ${theme.label}`} className="gap-1.5 px-2">
+          {theme.theme === "light" ? <Sun className="h-4 w-4" /> : theme.theme === "dark" ? <Moon className="h-4 w-4" /> : <SunMoon className="h-4 w-4" />}
+          <span className="text-xs hidden sm:inline">{theme.label}</span>
         </Button>
       </div>
     </header>

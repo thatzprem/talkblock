@@ -27,13 +27,15 @@ export default function LoginPage() {
   const [dark, setDark] = useState(true)
 
   useEffect(() => {
-    setDark(document.documentElement.classList.contains("dark"))
+    const el = document.documentElement
+    setDark(el.classList.contains("dark") || el.classList.contains("dim") || el.classList.contains("dusk"))
   }, [])
 
   const toggleTheme = () => {
     const next = !dark
     setDark(next)
-    document.documentElement.classList.toggle("dark", next)
+    document.documentElement.classList.remove("dark", "dim", "dusk")
+    if (next) document.documentElement.classList.add("dark")
     localStorage.setItem("theme", next ? "dark" : "light")
   }
 

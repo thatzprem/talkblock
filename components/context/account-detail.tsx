@@ -1,9 +1,11 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
-import { User, HardDrive, Cpu, Wifi, Key, Shield, Copy, Check } from "lucide-react"
+import { User, HardDrive, Cpu, Wifi, Key, Shield, Copy, Check, Database, Zap, Loader2, FileCode } from "lucide-react"
+import { useChain } from "@/lib/stores/chain-store"
+import { useDetailContext } from "@/lib/stores/context-store"
 
 // eslint-disable-next-line @typescript-eslint/no-explicit-any
 interface AccountDetailProps {
@@ -47,8 +49,68 @@ function ResourceDetail({ label, used, max, icon: Icon }: { label: string; used:
   )
 }
 
+interface AbiTable { name: string; index_type: string; key_names: string[]; key_types: string[]; type: string }
+interface AbiAction { name: string; type: string; ricardian_contract?: string }
+interface AbiStruct { name: string; base: string; fields: { name: string; type: string }[] }
+interface AbiData { tables: AbiTable[]; actions: AbiAction[]; structs: AbiStruct[] }
+
 export function AccountDetail({ data }: AccountDetailProps) {
   const [copied, setCopied] = useState(false)
+  const { endpoint } = useChain()
+  const { setContext } = useDetailContext()
+  const [abi, setAbi] = useState<AbiData | null>(null)
+  const [abiLoading, setAbiLoading] = useState(false)
+  const [abiChecked, setAbiChecked] = useState(false)
+
+  useEffect(() => {
+    if (!endpoint || !data.account_name) return
+    setAbiLoading(true)
+    fetch("/api/lookup", {
+      method: "POST",
+      headers: { "Content-Type": "application/json" },
+      body: JSON.stringify({ type: "abi", id: data.account_name, endpoint }),
+    })
+      .then((r) => r.json())
+      .then((result) => {
+        if (result.abi) setAbi(result.abi)
+      })
+      .catch(() => {})
+      .finally(() => { setAbiLoading(false); setAbiChecked(true) })
+  }, [endpoint, data.account_name])
+
+  const handleTableClick = async (tableName: string) => {
+    if (!endpoint) return
+    try {
+      const res = await fetch("/api/lookup", {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({
+          type: "table",
+          code: data.account_name,
+          table: tableName,
+          scope: data.account_name,
+          endpoint,
+        }),
+      })
+      if (res.ok) {
+        const tableData = await res.json()
+        setContext("table", tableData)
+      }
+    } catch {}
+  }
+
+  const handleActionClick = (actionName: string) => {
+    if (!abi) return
+    const action = abi.actions.find((a) => a.name === actionName)
+    if (!action) return
+    const struct = abi.structs.find((s) => s.name === action.type)
+    setContext("action", {
+      account_name: data.account_name,
+      action_name: actionName,
+      fields: struct?.fields || [],
+    })
+  }
+
   const ram = data.ram || { used: 0, quota: 0 }
   const cpu = data.cpu || { used: 0, available: 0, max: 0 }
   const net = data.net || { used: 0, available: 0, max: 0 }
@@ -148,6 +210,68 @@ export function AccountDetail({ data }: AccountDetailProps) {
                 {data.voter_info.producers.map((p: any) => (
                   <Badge key={p} variant="secondary" className="text-[10px]">{p}</Badge>
                 ))}
+              </div>
+            )}
+          </div>
+        </>
+      )}
+
+      {abiLoading && (
+        <>
+          <Separator />
+          <div className="flex items-center gap-2 text-xs text-muted-foreground">
+            <Loader2 className="h-3 w-3 animate-spin" />
+            Loading contract...
+          </div>
+        </>
+      )}
+
+      {abiChecked && abi && (
+        <>
+          <Separator />
+          <div className="space-y-2">
+            <h3 className="text-sm font-medium flex items-center gap-1.5">
+              <FileCode className="h-3.5 w-3.5" />
+              Contract
+            </h3>
+
+            {abi.tables.length > 0 && (
+              <div className="space-y-1.5">
+                <h4 className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Database className="h-3 w-3" />
+                  Tables ({abi.tables.length})
+                </h4>
+                <div className="flex flex-wrap gap-1">
+                  {abi.tables.map((t) => (
+                    <button
+                      key={t.name}
+                      onClick={() => handleTableClick(t.name)}
+                      className="text-[11px] font-mono px-1.5 py-0.5 rounded border border-border bg-muted hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+                    >
+                      {t.name}
+                    </button>
+                  ))}
+                </div>
+              </div>
+            )}
+
+            {abi.actions.length > 0 && (
+              <div className="space-y-1.5">
+                <h4 className="text-xs text-muted-foreground flex items-center gap-1">
+                  <Zap className="h-3 w-3" />
+                  Actions ({abi.actions.length})
+                </h4>
+                <div className="flex flex-wrap gap-1">
+                  {abi.actions.map((a) => (
+                    <button
+                      key={a.name}
+                      onClick={() => handleActionClick(a.name)}
+                      className="text-[11px] font-mono px-1.5 py-0.5 rounded border border-border bg-muted hover:bg-accent hover:text-accent-foreground transition-colors cursor-pointer"
+                    >
+                      {a.name}
+                    </button>
+                  ))}
+                </div>
               </div>
             )}
           </div>

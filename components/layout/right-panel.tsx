@@ -3,7 +3,7 @@
 import React from "react"
 import { useDetailContext } from "@/lib/stores/context-store"
 import { Button } from "@/components/ui/button"
-import { X } from "lucide-react"
+import { X, ArrowLeft } from "lucide-react"
 import { cn } from "@/lib/utils"
 import { AccountDetail } from "@/components/context/account-detail"
 import { BlockDetail } from "@/components/context/block-detail"
@@ -21,7 +21,7 @@ class DetailErrorBoundary extends React.Component<
 }
 
 export function RightPanel() {
-  const { type, data, clearContext } = useDetailContext()
+  const { type, data, clearContext, parentAccount, backToAccount } = useDetailContext()
 
   const open = !!type && !!data
 
@@ -58,9 +58,16 @@ export function RightPanel() {
       <div className="h-full overflow-y-auto">
         <div className="p-4">
           <div className="flex items-center justify-between mb-4">
-            <h3 className="text-sm font-medium">
-              {type ? type.charAt(0).toUpperCase() + type.slice(1) + " Details" : "Details"}
-            </h3>
+            <div className="flex items-center gap-1">
+              {parentAccount && (type === "table" || type === "action") && (
+                <Button variant="ghost" size="icon" onClick={backToAccount} className="h-7 w-7">
+                  <ArrowLeft className="h-4 w-4" />
+                </Button>
+              )}
+              <h3 className="text-sm font-medium">
+                {type ? type.charAt(0).toUpperCase() + type.slice(1) + " Details" : "Details"}
+              </h3>
+            </div>
             <Button variant="ghost" size="icon" onClick={clearContext}>
               <X className="h-4 w-4" />
             </Button>

@@ -28,9 +28,10 @@ export default function RootLayout({
         <link rel="icon" href="/icon.svg" type="image/svg+xml" />
         <script dangerouslySetInnerHTML={{ __html: `
           (function() {
-            var t = localStorage.getItem('theme');
-            if (t === 'light') document.documentElement.classList.remove('dark');
-            else document.documentElement.classList.add('dark');
+            var t = localStorage.getItem('theme') || 'dark';
+            var all = ['dark','dim','dusk'];
+            document.documentElement.classList.remove.apply(document.documentElement.classList, all);
+            if (t !== 'light' && all.indexOf(t) !== -1) document.documentElement.classList.add(t);
           })();
         `}} />
       </head>

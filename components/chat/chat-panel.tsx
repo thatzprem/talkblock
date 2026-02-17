@@ -255,14 +255,6 @@ export function ChatPanel() {
     return () => window.removeEventListener("bookmark-show", handler)
   }, [setMessages])
 
-  // Check for pending tx lookup from shared URL
-  useEffect(() => {
-    const pending = sessionStorage.getItem("pending_tx_lookup")
-    if (pending) {
-      sessionStorage.removeItem("pending_tx_lookup")
-      handleSend(`Show me transaction ${pending}`)
-    }
-  }, [handleSend])
 
   useEffect(() => {
     if (scrollRef.current) {

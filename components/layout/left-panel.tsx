@@ -8,7 +8,9 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
-import { Link2, Bookmark, Trash2, User, Box, FileText, Database, Coins, Shield, Users, FileSignature, ChevronDown } from "lucide-react"
+import { Link2, Bookmark, Trash2, User, Box, FileText, Database, Coins, Shield, Users, FileSignature, ChevronDown, Clock } from "lucide-react"
+import { useDetailContext } from "@/lib/stores/context-store"
+import { fetchAccountData } from "@/lib/antelope/lookup"
 
 const TOOL_ICONS: Record<string, React.ElementType> = {
   get_account: User,
@@ -23,8 +25,9 @@ const TOOL_ICONS: Record<string, React.ElementType> = {
 
 export function LeftPanel() {
   const { leftOpen, view } = usePanels()
-  const { chainInfo, chainName, endpoint, hyperionEndpoint } = useChain()
+  const { chainInfo, chainName, endpoint, hyperionEndpoint, presets } = useChain()
   const { bookmarks, removeBookmark } = useHistory()
+  const { recentAccounts, clearRecents, setContext } = useDetailContext()
   const [chainExpanded, setChainExpanded] = useState(false)
   const [rpcUp, setRpcUp] = useState(false)
   const [hyperionUp, setHyperionUp] = useState(false)
@@ -66,6 +69,22 @@ export function LeftPanel() {
 
   const handleBookmarkClick = (bookmark: typeof bookmarks[0]) => {
     window.dispatchEvent(new CustomEvent("bookmark-show", { detail: bookmark }))
+  }
+
+  const handleRecentClick = async (accountName: string, recentChainName: string) => {
+    // If different chain, resolve endpoint from presets
+    let ep = endpoint
+    if (recentChainName && recentChainName !== chainName) {
+      const preset = presets.find((p: { name: string }) => p.name === recentChainName)
+      if (preset) ep = preset.url
+    }
+    if (!ep) return
+    try {
+      const data = await fetchAccountData(accountName, ep)
+      setContext("account", data)
+    } catch {
+      // silently fail
+    }
   }
 
   return (
@@ -144,13 +163,13 @@ export function LeftPanel() {
           {bookmarks.length === 0 ? (
             <p className="text-xs text-muted-foreground">No bookmarks yet</p>
           ) : (
-            <div className="space-y-1">
+            <div className="space-y-0">
               {bookmarks.map((bookmark) => {
                 const Icon = TOOL_ICONS[bookmark.tool_name] || FileText
                 return (
-                  <div key={bookmark.id} className="flex items-center gap-2 group">
+                  <div key={bookmark.id} className="flex items-center gap-1.5 group">
                     <button
-                      className="flex items-center gap-1.5 text-xs hover:text-primary transition-colors text-left truncate flex-1"
+                      className="flex items-center gap-1.5 text-xs hover:text-primary transition-colors text-left truncate flex-1 cursor-pointer"
                       onClick={() => handleBookmarkClick(bookmark)}
                     >
                       <Icon className="h-3 w-3 shrink-0 text-muted-foreground" />
@@ -170,6 +189,42 @@ export function LeftPanel() {
             </div>
           )}
         </div>
+
+        {/* Recent Accounts */}
+        {recentAccounts.length > 0 && (
+        <>
+        <Separator />
+        <div>
+          <h3 className="text-xs font-medium text-muted-foreground uppercase tracking-wider mb-2 flex items-center gap-1.5">
+            <Clock className="h-3 w-3" />
+            <span className="flex-1">Recent</span>
+            <button
+              className="text-[10px] text-muted-foreground hover:text-primary transition-colors normal-case tracking-normal cursor-pointer"
+              onClick={clearRecents}
+            >
+              Clear
+            </button>
+          </h3>
+          <div className="space-y-1">
+            {recentAccounts.map((r) => (
+              <button
+                key={`${r.chain_name}-${r.account_name}`}
+                className="flex items-center gap-1.5 text-xs hover:text-primary transition-colors text-left truncate w-full cursor-pointer"
+                onClick={() => handleRecentClick(r.account_name, r.chain_name)}
+              >
+                <User className="h-3 w-3 shrink-0 text-muted-foreground" />
+                <span className="truncate">{r.account_name}</span>
+                {r.chain_name && r.chain_name !== chainName && (
+                  <Badge variant="secondary" className="text-[9px] px-1 py-0 shrink-0">
+                    {r.chain_name.split(" ")[0]}
+                  </Badge>
+                )}
+              </button>
+            ))}
+          </div>
+        </div>
+        </>
+        )}
         </>
         )}
       </div>
