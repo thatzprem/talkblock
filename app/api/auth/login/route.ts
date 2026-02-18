@@ -1,6 +1,6 @@
 import { createAdminClient } from "@/lib/supabase/server"
 import { isSupabaseConfigured } from "@/lib/supabase/check"
-import jwt from "jsonwebtoken"
+import { SignJWT } from "jose"
 
 export async function POST(req: Request) {
   if (!isSupabaseConfigured()) {
@@ -33,17 +33,17 @@ export async function POST(req: Request) {
   }
 
   // Sign custom JWT for Supabase RLS
-  const token = jwt.sign(
-    {
-      sub: profile.id,
-      role: "authenticated",
-      aud: "authenticated",
-      iss: process.env.NEXT_PUBLIC_SUPABASE_URL + "/auth/v1",
-      iat: Math.floor(Date.now() / 1000),
-      exp: Math.floor(Date.now() / 1000) + 60 * 60 * 24 * 7, // 7 days
-    },
-    process.env.SUPABASE_JWT_SECRET!
-  )
+  const secret = new TextEncoder().encode(process.env.SUPABASE_JWT_SECRET!)
+  const token = await new SignJWT({
+    sub: profile.id,
+    role: "authenticated",
+    aud: "authenticated",
+    iss: process.env.NEXT_PUBLIC_SUPABASE_URL + "/auth/v1",
+  })
+    .setProtectedHeader({ alg: "HS256" })
+    .setIssuedAt()
+    .setExpirationTime("7d")
+    .sign(secret)
 
   // Ensure user_settings row exists
   await supabase

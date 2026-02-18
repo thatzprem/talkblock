@@ -7,7 +7,7 @@ import { createAdminClient } from "@/lib/supabase/server"
 import { isSupabaseConfigured } from "@/lib/supabase/check"
 import { checkUsageAllowance, recordUsage } from "@/lib/billing/credits"
 import { getAppConfig } from "@/lib/config"
-import jwt from "jsonwebtoken"
+import { verifyToken } from "@/lib/auth/verify-token"
 
 export async function POST(req: Request) {
   const body = await req.json()
@@ -25,13 +25,12 @@ export async function POST(req: Request) {
   const token = req.headers.get("authorization")?.replace("Bearer ", "")
   if (token && isSupabaseConfigured()) {
     try {
-      const decoded = jwt.verify(token, process.env.SUPABASE_JWT_SECRET!) as { sub: string }
-      userId = decoded.sub
+      userId = await verifyToken(token)
       const supabase = createAdminClient()!
       const { data: settings } = await supabase
         .from("user_settings")
         .select("llm_provider, llm_model, llm_api_key, llm_mode")
-        .eq("user_id", decoded.sub)
+        .eq("user_id", userId!)
         .single()
 
       const llmMode = settings?.llm_mode || "builtin"

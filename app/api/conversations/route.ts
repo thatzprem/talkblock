@@ -1,17 +1,14 @@
 import { createAdminClient } from "@/lib/supabase/server"
-import jwt from "jsonwebtoken"
+import { verifyToken } from "@/lib/auth/verify-token"
 
-function getUserId(req: Request): string | null {
+async function getUserId(req: Request): Promise<string | null> {
   const token = req.headers.get("authorization")?.replace("Bearer ", "")
   if (!token) return null
-  try {
-    const decoded = jwt.verify(token, process.env.SUPABASE_JWT_SECRET!) as { sub: string }
-    return decoded.sub
-  } catch { return null }
+  return verifyToken(token)
 }
 
 export async function GET(req: Request) {
-  const userId = getUserId(req)
+  const userId = await getUserId(req)
   if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 })
 
   const supabase = createAdminClient()!
@@ -27,7 +24,7 @@ export async function GET(req: Request) {
 }
 
 export async function POST(req: Request) {
-  const userId = getUserId(req)
+  const userId = await getUserId(req)
   if (!userId) return Response.json({ error: "Unauthorized" }, { status: 401 })
 
   const body = await req.json()
