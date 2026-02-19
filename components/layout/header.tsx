@@ -100,21 +100,9 @@ export function Header() {
               <DialogTitle>Settings</DialogTitle>
             </DialogHeader>
             <div className="overflow-y-auto px-6 pb-6 min-h-[420px]">
-              <Tabs defaultValue="chain">
-                <TabsList className="w-full">
-                  <TabsTrigger value="chain" className="flex-1 gap-1.5">
-                    <Link2 className="h-3.5 w-3.5" />
-                    Chain
-                  </TabsTrigger>
-                  <TabsTrigger value="ai" className="flex-1 gap-1.5">
-                    <Bot className="h-3.5 w-3.5" />
-                    AI
-                  </TabsTrigger>
-                </TabsList>
-                <TabsContent value="chain" className="mt-4">
-                  <ChainSelector inline />
-                </TabsContent>
-                <TabsContent value="ai" className="mt-4 space-y-6">
+              {/* Chain tab is hidden when a default chain is set via NEXT_PUBLIC_DEFAULT_CHAIN_URL */}
+              {process.env.NEXT_PUBLIC_DEFAULT_CHAIN_URL ? (
+                <div className="mt-2 space-y-6">
                   <LLMSettings inline />
                   {user && llmMode === "builtin" && (
                     <>
@@ -125,8 +113,36 @@ export function Header() {
                       </section>
                     </>
                   )}
-                </TabsContent>
-              </Tabs>
+                </div>
+              ) : (
+                <Tabs defaultValue="chain">
+                  <TabsList className="w-full">
+                    <TabsTrigger value="chain" className="flex-1 gap-1.5">
+                      <Link2 className="h-3.5 w-3.5" />
+                      Chain
+                    </TabsTrigger>
+                    <TabsTrigger value="ai" className="flex-1 gap-1.5">
+                      <Bot className="h-3.5 w-3.5" />
+                      AI
+                    </TabsTrigger>
+                  </TabsList>
+                  <TabsContent value="chain" className="mt-4">
+                    <ChainSelector inline />
+                  </TabsContent>
+                  <TabsContent value="ai" className="mt-4 space-y-6">
+                    <LLMSettings inline />
+                    {user && llmMode === "builtin" && (
+                      <>
+                        <Separator />
+                        <section>
+                          <h3 className="text-xs font-semibold uppercase tracking-wider text-muted-foreground mb-3">Usage & Credits</h3>
+                          <UsageSummary />
+                        </section>
+                      </>
+                    )}
+                  </TabsContent>
+                </Tabs>
+              )}
             </div>
           </DialogContent>
         </Dialog>
