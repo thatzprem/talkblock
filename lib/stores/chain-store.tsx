@@ -4,6 +4,7 @@ import { createContext, useContext, useState, useCallback, useEffect, useMemo, R
 import { AntelopeClient, ChainInfo } from "@/lib/antelope/client"
 
 const PRESET_CHAINS = [
+  { name: "XPR Network", url: "https://proton.greymass.com", hyperion: "https://proton.eosusa.io" },
   { name: "EOS Mainnet", url: "https://eos.greymass.com", hyperion: "https://eos.hyperion.eosrio.io" },
   { name: "Jungle4 Testnet", url: "https://jungle4.greymass.com", hyperion: "https://jungle.eosusa.io" },
   { name: "WAX Mainnet", url: "https://wax.greymass.com", hyperion: "https://wax.eosrio.io" },
@@ -47,8 +48,8 @@ export function ChainProvider({ children }: { children: ReactNode }) {
       setChainInfo(info)
       setChainName(name || url)
       setClient(c)
-      // Resolve Hyperion endpoint: explicit param > preset lookup > none
-      const resolvedHyperion = hyperion || PRESET_CHAINS.find((p) => p.url === url)?.hyperion || null
+      // Resolve Hyperion endpoint: preset (always fresh) > explicit param > none
+      const resolvedHyperion = PRESET_CHAINS.find((p) => p.url === url)?.hyperion || hyperion || null
       setHyperionEndpoint(resolvedHyperion)
       localStorage.setItem("antelope_endpoint", url)
       localStorage.setItem("antelope_chain_name", name || url)

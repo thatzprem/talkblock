@@ -31,6 +31,21 @@ export default function LoginPage() {
     setDark(el.classList.contains("dark") || el.classList.contains("dim") || el.classList.contains("dusk"))
   }, [])
 
+  // Auto-connect to default chain if configured via environment variable.
+  // Set NEXT_PUBLIC_DEFAULT_CHAIN_URL in .env.local to bypass chain selection.
+  useEffect(() => {
+    const defaultUrl = process.env.NEXT_PUBLIC_DEFAULT_CHAIN_URL
+    if (!defaultUrl) return
+    const defaultName = process.env.NEXT_PUBLIC_DEFAULT_CHAIN_NAME || defaultUrl
+    const defaultHyperion = process.env.NEXT_PUBLIC_DEFAULT_CHAIN_HYPERION
+    setConnecting(true)
+    localStorage.setItem("antelope_endpoint", defaultUrl)
+    localStorage.setItem("antelope_chain_name", defaultName)
+    if (defaultHyperion) localStorage.setItem("antelope_hyperion", defaultHyperion)
+    document.cookie = `chain_selected=1; path=/; max-age=${60 * 60 * 24 * 365}; SameSite=Lax`
+    router.push("/")
+  }, [router])
+
   const toggleTheme = () => {
     const next = !dark
     setDark(next)
