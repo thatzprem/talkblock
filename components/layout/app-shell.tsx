@@ -13,7 +13,6 @@ import { CreditsProvider } from "@/lib/stores/credits-store"
 import { Header } from "./header"
 import { LeftPanel } from "./left-panel"
 import { RightPanel } from "./right-panel"
-import { Github } from "lucide-react"
 import { FeedbackDialog } from "@/components/feedback/feedback-dialog"
 import { FaqDialog } from "@/components/faq/faq-dialog"
 
@@ -38,15 +37,6 @@ function AppLayout({ children }: { children: React.ReactNode }) {
         <div className="flex items-center gap-3 shrink-0 ml-4">
           <FaqDialog />
           <FeedbackDialog />
-          <a
-            href="https://github.com/sdabas9/talkblock"
-            target="_blank"
-            rel="noopener noreferrer"
-            className="flex items-center gap-1 hover:text-foreground transition-colors"
-          >
-            <Github className="h-3 w-3" />
-            <span>GitHub</span>
-          </a>
         </div>
       </footer>
     </div>
