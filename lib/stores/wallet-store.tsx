@@ -50,6 +50,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
       try {
         const { SessionKit } = await import("@wharfkit/session")
         const { WebRenderer } = await import("@wharfkit/web-renderer")
+        const { WalletPluginWebAuth } = await import("@proton/wharfkit-plugin-webauth")
         const { WalletPluginAnchor } = await import("@wharfkit/wallet-plugin-anchor")
 
         const kit = new SessionKit({
@@ -61,7 +62,10 @@ export function WalletProvider({ children }: { children: ReactNode }) {
             },
           ],
           ui: new WebRenderer(),
-          walletPlugins: [new WalletPluginAnchor()],
+          walletPlugins: [
+            new WalletPluginWebAuth(),
+            new WalletPluginAnchor(),
+          ],
         })
 
         setSessionKit(kit)
@@ -111,7 +115,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
     setError(null)
     try {
       const timeout = new Promise((_, reject) =>
-        setTimeout(() => reject(new Error("Wallet connection timed out. Make sure Anchor wallet is installed.")), 30000)
+        setTimeout(() => reject(new Error("Wallet connection timed out. Make sure WebAuth or Anchor wallet is available.")), 30000)
       )
       const result = await Promise.race([sessionKit.login(), timeout]) as any
       if (abortRef.current || !result?.session) {

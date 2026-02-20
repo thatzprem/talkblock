@@ -314,10 +314,10 @@ export function ChatPanel() {
               <h2 className="text-lg font-semibold">TalkTo<span className="font-normal">XPR</span></h2>
               <div className="grid grid-cols-2 gap-2 max-w-md w-full">
                 {[
-                  { label: "Look up my account", query: accountName ? `Show me details about the ${accountName} account` : "Tell me about the eosio account" },
-                  { label: "Check my token balances", query: accountName ? `What tokens does ${accountName} hold?` : "What tokens does eosio.token hold?" },
-                  { label: "Top block producers", query: "Show me the top block producers" },
-                  { label: "Transfer tokens", query: accountName ? `Build a transfer of 1 unit of the native token from ${accountName} to ` : "Build a transfer of 1 unit of the native token from myaccount to " },
+                  { label: "Get all token balances", query: accountName ? `Show me details about the ${accountName} account` : "Make it a human readable format" },
+                  { label: "Check XPR balance on my account", query: accountName ? `What tokens does ${accountName} hold?` : "What tokens does eosio.token hold?" },
+                  { label: "Get current XPR token price", query: "Get current XPR token price" },
+                  { label: "Transfer tokens", query: accountName ? `Build a transfer of 10 unit of the native token from ${accountName} to ` : "Build a transfer of 1 unit of the native token from myaccount to " },
                 ].map((suggestion) => (
                   <button
                     key={suggestion.label}

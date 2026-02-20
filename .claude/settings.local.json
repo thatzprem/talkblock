@@ -1,0 +1,8 @@
+{
+  "permissions": {
+    "allow": [
+      "Bash(npm install:*)",
+      "Bash(powershell -Command \"npm view @proton/wharfkit-plugin-webauth 2>&1 | Select-String ''version|main|module|exports''\")"
+    ]
+  }
+}
