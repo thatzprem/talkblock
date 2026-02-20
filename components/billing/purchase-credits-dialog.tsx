@@ -78,7 +78,7 @@ export function PurchaseCreditsDialog({ trigger }: { trigger?: React.ReactNode }
     const { WebRenderer } = await import("@wharfkit/web-renderer")
     const { WalletPluginAnchor } = await import("@wharfkit/wallet-plugin-anchor")
     const kit = new SessionKit({
-      appName: "Talkblock",
+      appName: "TalkToXPR",
       chains: [{ id: TELOS_CHAIN_ID, url: TELOS_RPC_URL }],
       ui: new WebRenderer(),
       walletPlugins: [new WalletPluginAnchor()],

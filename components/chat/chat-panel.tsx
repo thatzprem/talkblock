@@ -270,7 +270,7 @@ export function ChatPanel() {
           <path d="M24 10L36 17V31L24 38L12 31V17L24 10Z" stroke="white" strokeWidth="2" strokeLinejoin="round"/>
           <path d="M24 10V24M24 24L36 17M24 24L12 17M24 24V38" stroke="white" strokeWidth="1.5" strokeLinejoin="round" opacity="0.6"/>
         </svg>
-        <h2 className="text-xl font-semibold">Welcome to Talkblock</h2>
+        <h2 className="text-xl font-semibold">Welcome to TalkToXPR</h2>
         <p className="text-muted-foreground text-center max-w-md">
           Chat with the blockchain using AI. Connect a wallet for 5 free requests per day, or bring your own API key.
         </p>
@@ -311,7 +311,7 @@ export function ChatPanel() {
                 <path d="M24 10L36 17V31L24 38L12 31V17L24 10Z" stroke="white" strokeWidth="2" strokeLinejoin="round"/>
                 <path d="M24 10V24M24 24L36 17M24 24L12 17M24 24V38" stroke="white" strokeWidth="1.5" strokeLinejoin="round" opacity="0.6"/>
               </svg>
-              <h2 className="text-lg font-semibold">Talk<span className="font-normal">block</span></h2>
+              <h2 className="text-lg font-semibold">TalkTo<span className="font-normal">XPR</span></h2>
               <div className="grid grid-cols-2 gap-2 max-w-md w-full">
                 {[
                   { label: "Look up my account", query: accountName ? `Show me details about the ${accountName} account` : "Tell me about the eosio account" },

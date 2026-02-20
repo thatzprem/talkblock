@@ -53,7 +53,7 @@ export function WalletProvider({ children }: { children: ReactNode }) {
         const { WalletPluginAnchor } = await import("@wharfkit/wallet-plugin-anchor")
 
         const kit = new SessionKit({
-          appName: "Talkblock",
+          appName: "TalkToXPR",
           chains: [
             {
               id: chainInfo.chain_id,

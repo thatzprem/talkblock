@@ -11,8 +11,8 @@ const FAQS = [
     section: "Getting Started",
     items: [
       {
-        q: "What is Talkblock?",
-        a: "Talkblock is an AI-powered blockchain explorer for Antelope chains. Instead of navigating menus and forms, you ask questions in plain English and get structured, interactive results.",
+        q: "What is TalkToXPR?",
+        a: "TalkToXPR is an AI-powered blockchain explorer for Antelope chains. Instead of navigating menus and forms, you ask questions in plain English and get structured, interactive results.",
       },
       {
         q: "Do I need a wallet to use it?",

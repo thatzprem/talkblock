@@ -13,8 +13,8 @@ const geistMono = Geist_Mono({
 })
 
 export const metadata: Metadata = {
-  title: "Talkblock",
-  description: "Chat-first Antelope blockchain explorer",
+  title: "TalkToXPR",
+  description: "Chat-first XPR Network blockchain explorer",
 }
 
 export default function RootLayout({

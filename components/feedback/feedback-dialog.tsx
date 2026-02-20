@@ -92,7 +92,7 @@ export function FeedbackDialog({ trigger }: { trigger?: React.ReactNode }) {
             <div>
               <p className="font-medium">Thanks for your feedback!</p>
               <p className="text-sm text-muted-foreground mt-1">
-                We appreciate you taking the time to help improve Talkblock.
+                We appreciate you taking the time to help improve TalkToXPR.
               </p>
             </div>
             <Button onClick={handleClose}>Done</Button>

@@ -101,7 +101,7 @@ export default function LoginPage() {
               <path d="M24 10L36 17V31L24 38L12 31V17L24 10Z" stroke="white" strokeWidth="2" strokeLinejoin="round"/>
               <path d="M24 10V24M24 24L36 17M24 24L12 17M24 24V38" stroke="white" strokeWidth="1.5" strokeLinejoin="round" opacity="0.6"/>
             </svg>
-            Talk<span className="font-normal">block</span>
+            TalkTo<span className="font-normal">XPR</span>
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">
             Select a chain to get started
