@@ -511,7 +511,7 @@ export function createChainTools(endpoint: string | null, hyperionEndpoint: stri
         payer: z.string().optional().describe("RAM payer to filter by"),
         limit: z.number().optional().describe("Max results to return (default 20)"),
         skip: z.number().optional().describe("Number of results to skip for pagination"),
-        sort: z.enum(["asc", "desc"]).optional().describe("Sort order by timestamp"),
+        sort: z.string().optional().describe("Sort order by timestamp: 'asc' or 'desc'"),
         after: z.string().optional().describe("Only deltas after this ISO8601 date"),
         before: z.string().optional().describe("Only deltas before this ISO8601 date"),
       }),
@@ -642,7 +642,7 @@ export function createChainTools(endpoint: string | null, hyperionEndpoint: stri
         "Get accounts that have transacted with a given account. Shows who an account sends to or receives from, useful for network analysis and finding related accounts.",
       inputSchema: z.object({
         account: z.string().describe("The account to analyze"),
-        direction: z.enum(["in", "out", "both"]).describe("Direction of transfers: 'in' (received from), 'out' (sent to), or 'both'"),
+        direction: z.string().describe("Direction of transfers: 'in' (received from), 'out' (sent to), or 'both'"),
         symbol: z.string().optional().describe("Filter by token symbol (e.g. 'TLOS')"),
         contract: z.string().optional().describe("Filter by token contract (e.g. 'eosio.token')"),
         limit: z.number().optional().describe("Max accounts to return (default 50)"),

@@ -3,6 +3,7 @@
 import { useEffect, useRef, Suspense } from "react"
 import { useSearchParams, useRouter } from "next/navigation"
 import { ChatPanel } from "@/components/chat/chat-panel"
+import { PromptLibrary } from "@/components/chat/prompt-library"
 import { DashboardView } from "@/components/dashboard/dashboard-view"
 import { usePanels } from "@/lib/stores/panel-store"
 import { useChain } from "@/lib/stores/chain-store"
@@ -77,6 +78,7 @@ export default function Home() {
         <ChatPanel />
       </div>
       {view === "dashboard" && <DashboardView />}
+      <PromptLibrary />
     </>
   )
 }

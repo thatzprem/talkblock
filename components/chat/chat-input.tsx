@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Button } from "@/components/ui/button"
 import { Textarea } from "@/components/ui/textarea"
 import { SendHorizontal } from "lucide-react"
@@ -13,6 +13,12 @@ interface ChatInputProps {
 
 export function ChatInput({ onSend, disabled, placeholder }: ChatInputProps) {
   const [value, setValue] = useState("")
+
+  useEffect(() => {
+    const handler = (e: Event) => setValue((e as CustomEvent<string>).detail)
+    window.addEventListener("inject-prompt", handler)
+    return () => window.removeEventListener("inject-prompt", handler)
+  }, [])
 
   const handleSend = () => {
     if (!value.trim() || disabled) return

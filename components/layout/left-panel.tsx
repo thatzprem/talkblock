@@ -63,7 +63,7 @@ export function LeftPanel() {
     }
 
     check()
-    const id = setInterval(check, 300_000)
+    const id = setInterval(check, 120_000)
     return () => clearInterval(id)
   }, [endpoint, hyperionEndpoint])
 
