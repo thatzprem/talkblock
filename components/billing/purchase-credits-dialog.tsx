@@ -132,7 +132,7 @@ export function PurchaseCreditsDialog({ trigger }: { trigger?: React.ReactNode }
           from: actor,
           to: appWalletAccount,
           quantity: `${effectiveAmount.toFixed(4)} TLOS`,
-          memo: `talkblock-credit:${targetChainId}:${targetAccount}`,
+          memo: `talktoxpr-credit:${targetChainId}:${targetAccount}`,
         },
       }]
 

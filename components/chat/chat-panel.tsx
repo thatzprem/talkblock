@@ -13,9 +13,8 @@ import { useAuth } from "@/lib/stores/auth-store"
 import { useConversations } from "@/lib/stores/conversation-store"
 import { useCredits } from "@/lib/stores/credits-store"
 import { LLMSettings } from "@/components/settings/llm-settings"
-import { PurchaseCreditsDialog } from "@/components/billing/purchase-credits-dialog"
 import { Button } from "@/components/ui/button"
-import { Bot, Settings, Wallet, Key, AlertCircle } from "lucide-react"
+import { Bot, Settings, Wallet, Key, AlertCircle, Clock } from "lucide-react"
 import { Avatar } from "@/components/ui/avatar"
 import { isToolUIPart, isReasoningUIPart, getToolName } from "ai"
 import { ToolResultRenderer } from "./cards/tool-result-renderer"
@@ -38,6 +37,27 @@ export function ChatPanel() {
   const activeConvRef = useRef(activeConversationId)
   activeConvRef.current = activeConversationId
   const [outOfCredits, setOutOfCredits] = useState(false)
+  const [resetCountdown, setResetCountdown] = useState("")
+
+  // Count down to next UTC midnight (when daily free credits reset)
+  useEffect(() => {
+    if (!outOfCredits) return
+    const tick = () => {
+      const now = new Date()
+      const midnight = new Date()
+      midnight.setUTCHours(24, 0, 0, 0)
+      const diff = midnight.getTime() - now.getTime()
+      const h = Math.floor(diff / 3_600_000)
+      const m = Math.floor((diff % 3_600_000) / 60_000)
+      const s = Math.floor((diff % 60_000) / 1_000)
+      setResetCountdown(
+        `${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`
+      )
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [outOfCredits])
 
   const endpointRef = useRef(endpoint)
   const hyperionRef = useRef(hyperionEndpoint)
@@ -407,14 +427,17 @@ export function ChatPanel() {
             <div className="mx-4 my-3 p-4 rounded-lg border border-yellow-500/20 bg-yellow-500/5">
               <div className="flex items-center gap-2 text-sm font-medium text-yellow-600 dark:text-yellow-400">
                 <AlertCircle className="h-4 w-4" />
-                Out of credits
+                Daily limit reached
               </div>
               <p className="text-sm text-muted-foreground mt-1">
-                You&apos;ve used all 5 free requests today. Purchase credits to continue chatting.
+                You&apos;ve used all 5 free requests today. Your credits will reset at midnight UTC.
               </p>
-              <div className="mt-3">
-                <PurchaseCreditsDialog />
-              </div>
+              {resetCountdown && (
+                <div className="mt-3 flex items-center gap-2 text-sm font-mono font-medium text-yellow-600 dark:text-yellow-400">
+                  <Clock className="h-4 w-4 shrink-0" />
+                  Resets in {resetCountdown}
+                </div>
+              )}
             </div>
           )}
 
