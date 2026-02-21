@@ -10,6 +10,16 @@ export async function POST(req: Request) {
     )
   }
 
+  if (!process.env.SUPABASE_SERVICE_ROLE_KEY) {
+    console.error("[auth/login] Missing SUPABASE_SERVICE_ROLE_KEY env var")
+    return Response.json({ error: "Server misconfiguration: missing service role key" }, { status: 503 })
+  }
+
+  if (!process.env.SUPABASE_JWT_SECRET) {
+    console.error("[auth/login] Missing SUPABASE_JWT_SECRET env var")
+    return Response.json({ error: "Server misconfiguration: missing JWT secret" }, { status: 503 })
+  }
+
   const { accountName, chainId } = await req.json()
 
   if (!accountName || !chainId) {
@@ -29,7 +39,8 @@ export async function POST(req: Request) {
     .single()
 
   if (error || !profile) {
-    return Response.json({ error: "Failed to create profile" }, { status: 500 })
+    console.error("[auth/login] Supabase upsert error:", error)
+    return Response.json({ error: "Failed to create profile", detail: error?.message }, { status: 500 })
   }
 
   // Sign custom JWT for Supabase RLS
