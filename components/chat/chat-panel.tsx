@@ -14,7 +14,7 @@ import { useConversations } from "@/lib/stores/conversation-store"
 import { useCredits } from "@/lib/stores/credits-store"
 import { LLMSettings } from "@/components/settings/llm-settings"
 import { Button } from "@/components/ui/button"
-import { Bot, Settings, Wallet, Key, AlertCircle, Clock } from "lucide-react"
+import { Bot, Settings, Wallet, Key, AlertCircle, Clock, Rocket, Coins, User, Link2, ArrowLeftRight, Sparkles } from "lucide-react"
 import { Avatar } from "@/components/ui/avatar"
 import { isToolUIPart, isReasoningUIPart, getToolName } from "ai"
 import { ToolResultRenderer } from "./cards/tool-result-renderer"
@@ -321,25 +321,82 @@ export function ChatPanel() {
       <div className="flex-1 overflow-y-auto" ref={scrollRef}>
         <div className="max-w-3xl mx-auto py-4">
           {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-4 py-16 px-4">
+            <div className="flex flex-col items-center justify-center gap-6 py-10 px-4">
               <img src="/icon.png" className="h-14 w-14 dark:invert" alt="TalkToXPR" />
-              <h2 className="text-lg font-semibold">TalkTo<span className="font-normal">XPR</span></h2>
-              <div className="grid grid-cols-2 gap-2 max-w-md w-full">
-                {[
-                  { label: "Get all token balances", query: accountName ? `Show me details about the ${accountName} account` : "Make it a human readable format" },
-                  { label: "Check XPR balance on my account", query: accountName ? `What tokens does ${accountName} hold?` : "What tokens does eosio.token hold?" },
-                  { label: "Get current XPR token price", query: "Get current XPR token price" },
-                  { label: "Transfer tokens", query: accountName ? `Build a transfer of 10 unit of the native token from ${accountName} to ` : "Build a transfer of 1 unit of the native token from myaccount to " },
-                ].map((suggestion) => (
-                  <button
-                    key={suggestion.label}
-                    className="text-left text-sm px-3 py-2.5 rounded-lg border border-border hover:bg-muted transition-colors text-muted-foreground hover:text-foreground"
-                    onClick={() => handleSend(suggestion.query)}
-                  >
-                    {suggestion.label}
-                  </button>
-                ))}
+              <div className="text-center space-y-1">
+                <h2 className="text-lg font-semibold">TalkTo<span className="font-normal">XPR</span></h2>
+                <p className="text-sm text-muted-foreground">Ask anything about the XPR Network blockchain</p>
               </div>
+              <div className="w-full max-w-lg space-y-4">
+                {([
+                  {
+                    label: "Getting Started", icon: Rocket,
+                    prompts: [
+                      { label: "What can you help with?", text: "What can you help me do on XPR Network?" },
+                      { label: "How to use TalkToXPR", text: "How do I use TalkToXPR to interact with the blockchain?" },
+                    ],
+                  },
+                  accountName
+                    ? {
+                        label: "My Account", icon: User,
+                        prompts: [
+                          { label: "View my balances", text: "Show me all token balances for {account}" },
+                          { label: "Recent transactions", text: "Show me recent transactions for {account}" },
+                        ],
+                      }
+                    : {
+                        label: "Blockchain Info", icon: Link2,
+                        prompts: [
+                          { label: "Chain status", text: "What is the current state of the XPR Network blockchain?" },
+                          { label: "Block producers", text: "Who are the current block producers on XPR Network?" },
+                        ],
+                      },
+                  {
+                    label: "Tokens & Prices", icon: Coins,
+                    prompts: [
+                      { label: "XPR token price", text: "Get the current XPR token price" },
+                      { label: "Total XPR supply", text: "What is the total supply of XPR?" },
+                    ],
+                  },
+                  {
+                    label: "Transfers", icon: ArrowLeftRight,
+                    prompts: [
+                      { label: "Transfer XPR", text: "Transfer 1 XPR from {account} to " },
+                      { label: "Transfer XUSDC", text: "Transfer 1 XUSDC from {account} to " },
+                    ],
+                  },
+                ] as { label: string; icon: React.ElementType; prompts: { label: string; text: string }[] }[]).map((cat) => {
+                  const Icon = cat.icon
+                  return (
+                    <div key={cat.label}>
+                      <div className="flex items-center gap-1.5 mb-2">
+                        <Icon className="h-3 w-3 text-muted-foreground" />
+                        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{cat.label}</span>
+                      </div>
+                      <div className="grid grid-cols-2 gap-2">
+                        {cat.prompts.map((p) => (
+                          <button
+                            key={p.label}
+                            className="text-left text-sm px-3 py-2.5 rounded-lg border border-border hover:bg-muted hover:border-primary/40 transition-colors text-muted-foreground hover:text-foreground"
+                            onClick={() => {
+                              const resolved = accountName
+                                ? p.text.replace(/\{account\}/g, accountName)
+                                : p.text.replace(/\s*for \{account\}|\{account\}\s*/g, "")
+                              window.dispatchEvent(new CustomEvent("inject-prompt", { detail: resolved }))
+                            }}
+                          >
+                            {p.label}
+                          </button>
+                        ))}
+                      </div>
+                    </div>
+                  )
+                })}
+              </div>
+              <p className="text-xs text-muted-foreground flex items-center gap-1">
+                <Sparkles className="h-3 w-3" />
+                Tap the prompt library for more examples
+              </p>
             </div>
           ) : (
             (() => {

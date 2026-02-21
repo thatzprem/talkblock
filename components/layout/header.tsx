@@ -22,7 +22,7 @@ import {
 } from "@/components/ui/dropdown-menu"
 import { Separator } from "@/components/ui/separator"
 import { Tabs, TabsList, TabsTrigger, TabsContent } from "@/components/ui/tabs"
-import { PanelLeft, MessageSquare, Plus, Trash2, LayoutDashboard, Sun, Moon, SunMoon, Settings, Link2, Bot } from "lucide-react"
+import { PanelLeft, MessageSquare, Plus, Trash2, LayoutDashboard, Sun, Moon, SunMoon, Settings, Link2, Bot, Sparkles } from "lucide-react"
 import { useState, useEffect } from "react"
 
 type Theme = "light" | "dusk" | "dim" | "dark"
@@ -163,6 +163,16 @@ export function Header() {
           >
             <LayoutDashboard className="h-3.5 w-3.5 mr-1" />
             Dashboard
+          </Button>
+          <Button
+            variant="ghost"
+            size="sm"
+            className="rounded-none h-7 px-2.5 text-xs border-l"
+            onClick={() => window.dispatchEvent(new CustomEvent("open-prompt-library"))}
+            title="Prompt Library"
+          >
+            <Sparkles className="h-3.5 w-3.5 mr-1" />
+            Prompts
           </Button>
         </div>
       </div>

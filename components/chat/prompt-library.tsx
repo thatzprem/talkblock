@@ -1,6 +1,6 @@
 "use client"
 
-import { useState } from "react"
+import { useState, useEffect } from "react"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
 import { Sparkles, Rocket, User, Coins, Link2, ArrowLeftRight, ChevronRight } from "lucide-react"
@@ -57,6 +57,13 @@ const CATEGORIES = [
 export function PromptLibrary() {
   const [open, setOpen] = useState(false)
   const { accountName } = useWallet()
+
+  // Allow the header nav button to open the sheet via a custom event
+  useEffect(() => {
+    const handler = () => setOpen(true)
+    window.addEventListener("open-prompt-library", handler)
+    return () => window.removeEventListener("open-prompt-library", handler)
+  }, [])
 
   const inject = (text: string) => {
     const resolved = accountName
