@@ -28,7 +28,7 @@ export function LeftPanel() {
   const { chainInfo, chainName, endpoint, hyperionEndpoint, presets } = useChain()
   const { bookmarks, removeBookmark } = useHistory()
   const { recentAccounts, clearRecents, setContext } = useDetailContext()
-  const [chainExpanded, setChainExpanded] = useState(false)
+  const [chainExpanded, setChainExpanded] = useState(true)
   const [rpcUp, setRpcUp] = useState(false)
   const [hyperionUp, setHyperionUp] = useState(false)
   const [liveInfo, setLiveInfo] = useState(chainInfo)

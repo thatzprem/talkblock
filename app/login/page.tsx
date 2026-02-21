@@ -96,11 +96,7 @@ export default function LoginPage() {
       <Card className="w-full max-w-md">
         <CardHeader className="text-center">
           <CardTitle className="text-2xl flex items-center justify-center gap-2">
-            <svg viewBox="0 0 48 48" fill="none" className="h-7 w-7" xmlns="http://www.w3.org/2000/svg">
-              <path d="M4 8C4 4.686 6.686 2 10 2H38C41.314 2 44 4.686 44 8V32C44 35.314 41.314 38 38 38H28L20 46V38H10C6.686 38 4 35.314 4 32V8Z" fill="#6366f1"/>
-              <path d="M24 10L36 17V31L24 38L12 31V17L24 10Z" stroke="white" strokeWidth="2" strokeLinejoin="round"/>
-              <path d="M24 10V24M24 24L36 17M24 24L12 17M24 24V38" stroke="white" strokeWidth="1.5" strokeLinejoin="round" opacity="0.6"/>
-            </svg>
+            <img src="/icon.png" className="h-7 w-7 dark:invert" alt="TalkToXPR" />
             TalkTo<span className="font-normal">XPR</span>
           </CardTitle>
           <p className="text-sm text-muted-foreground mt-1">

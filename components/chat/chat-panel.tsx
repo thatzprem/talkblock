@@ -285,11 +285,7 @@ export function ChatPanel() {
   if (!isConfigured) {
     return (
       <div className="flex-1 flex flex-col items-center justify-center gap-4 p-8">
-        <svg viewBox="0 0 48 48" fill="none" className="h-16 w-16" xmlns="http://www.w3.org/2000/svg">
-          <path d="M4 8C4 4.686 6.686 2 10 2H38C41.314 2 44 4.686 44 8V32C44 35.314 41.314 38 38 38H28L20 46V38H10C6.686 38 4 35.314 4 32V8Z" fill="#6366f1"/>
-          <path d="M24 10L36 17V31L24 38L12 31V17L24 10Z" stroke="white" strokeWidth="2" strokeLinejoin="round"/>
-          <path d="M24 10V24M24 24L36 17M24 24L12 17M24 24V38" stroke="white" strokeWidth="1.5" strokeLinejoin="round" opacity="0.6"/>
-        </svg>
+        <img src="/icon.png" className="h-16 w-16 dark:invert" alt="TalkToXPR" />
         <h2 className="text-xl font-semibold">Welcome to TalkToXPR</h2>
         <p className="text-muted-foreground text-center max-w-md">
           Chat with the blockchain using AI. Connect a wallet for 5 free requests per day, or bring your own API key.
@@ -326,11 +322,7 @@ export function ChatPanel() {
         <div className="max-w-3xl mx-auto py-4">
           {messages.length === 0 ? (
             <div className="flex flex-col items-center justify-center gap-4 py-16 px-4">
-              <svg viewBox="0 0 48 48" fill="none" className="h-14 w-14" xmlns="http://www.w3.org/2000/svg">
-                <path d="M4 8C4 4.686 6.686 2 10 2H38C41.314 2 44 4.686 44 8V32C44 35.314 41.314 38 38 38H28L20 46V38H10C6.686 38 4 35.314 4 32V8Z" fill="#6366f1"/>
-                <path d="M24 10L36 17V31L24 38L12 31V17L24 10Z" stroke="white" strokeWidth="2" strokeLinejoin="round"/>
-                <path d="M24 10V24M24 24L36 17M24 24L12 17M24 24V38" stroke="white" strokeWidth="1.5" strokeLinejoin="round" opacity="0.6"/>
-              </svg>
+              <img src="/icon.png" className="h-14 w-14 dark:invert" alt="TalkToXPR" />
               <h2 className="text-lg font-semibold">TalkTo<span className="font-normal">XPR</span></h2>
               <div className="grid grid-cols-2 gap-2 max-w-md w-full">
                 {[
