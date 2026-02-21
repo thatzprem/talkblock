@@ -57,10 +57,6 @@ const FAQS = [
         a: "Each wallet account gets 5 free AI requests per day, per chain. The count resets daily at midnight UTC.",
       },
       {
-        q: "How do I get more credits?",
-        a: "Purchase credits with TLOS on Telos Mainnet. 1 TLOS = 250,000 tokens. You can pay from any chain — a standalone Telos wallet handles the payment without switching your current chain.",
-      },
-      {
         q: "Are my API keys safe?",
         a: "Yes. BYOK keys are stored only in your browser's localStorage. They are never sent to the server.",
       },

@@ -14,7 +14,7 @@ import { useConversations } from "@/lib/stores/conversation-store"
 import { useCredits } from "@/lib/stores/credits-store"
 import { LLMSettings } from "@/components/settings/llm-settings"
 import { Button } from "@/components/ui/button"
-import { Bot, Settings, Wallet, Key, AlertCircle, Clock, Rocket, Coins, User, Link2, ArrowLeftRight, Sparkles } from "lucide-react"
+import { Bot, Settings, Wallet, Key, AlertCircle, Clock, Rocket, Coins, User, Link2, ArrowLeftRight, Sparkles, Heart } from "lucide-react"
 import { Avatar } from "@/components/ui/avatar"
 import { isToolUIPart, isReasoningUIPart, getToolName } from "ai"
 import { ToolResultRenderer } from "./cards/tool-result-renderer"
@@ -397,6 +397,23 @@ export function ChatPanel() {
                 <Sparkles className="h-3 w-3" />
                 Tap the prompt library for more examples
               </p>
+              <div className="w-full max-w-lg rounded-lg border border-primary/20 bg-primary/5 p-3 flex items-center justify-between gap-3">
+                <div className="space-y-0.5 min-w-0">
+                  <p className="text-xs font-medium flex items-center gap-1.5">
+                    <Heart className="h-3 w-3 text-primary shrink-0" />
+                    Support TalkToXPR
+                  </p>
+                  <p className="text-[11px] text-muted-foreground leading-snug">
+                    Built by <span className="font-mono font-medium text-foreground">protonIND</span>. Vote for us as a block producer to help sustain development.
+                  </p>
+                </div>
+                <button
+                  className="shrink-0 text-[11px] px-2.5 py-1.5 rounded border border-primary/30 text-primary hover:bg-primary/10 transition-colors font-medium whitespace-nowrap"
+                  onClick={() => window.dispatchEvent(new CustomEvent("inject-prompt", { detail: "I want to vote for protonIND as a block producer on XPR Network. Please help me update my vote." }))}
+                >
+                  Vote now
+                </button>
+              </div>
             </div>
           ) : (
             (() => {

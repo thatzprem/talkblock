@@ -8,7 +8,7 @@ import { Button } from "@/components/ui/button"
 import { Badge } from "@/components/ui/badge"
 import { Separator } from "@/components/ui/separator"
 import { cn } from "@/lib/utils"
-import { Link2, Bookmark, Trash2, User, Box, FileText, Database, Coins, Shield, Users, FileSignature, ChevronDown, Clock } from "lucide-react"
+import { Link2, Bookmark, Trash2, User, Box, FileText, Database, Coins, Shield, Users, FileSignature, ChevronDown, Clock, Heart } from "lucide-react"
 import { useDetailContext } from "@/lib/stores/context-store"
 import { fetchAccountData } from "@/lib/antelope/lookup"
 
@@ -227,6 +227,24 @@ export function LeftPanel() {
         )}
         </>
         )}
+
+        <Separator />
+        {/* Support protonIND */}
+        <div className="rounded-lg border border-primary/20 bg-primary/5 p-2.5 space-y-1.5">
+          <p className="text-[11px] font-medium flex items-center gap-1.5">
+            <Heart className="h-3 w-3 text-primary shrink-0" />
+            Support TalkToXPR
+          </p>
+          <p className="text-[10px] text-muted-foreground leading-snug">
+            Built by <span className="font-mono font-medium text-foreground">protonIND</span>. Vote for us as a block producer to help keep this project going.
+          </p>
+          <button
+            className="w-full text-[10px] py-1 rounded border border-primary/30 text-primary hover:bg-primary/10 transition-colors font-medium"
+            onClick={() => window.dispatchEvent(new CustomEvent("inject-prompt", { detail: "I want to vote for protonIND as a block producer on XPR Network. Please help me update my vote." }))}
+          >
+            Vote for protonIND
+          </button>
+        </div>
       </div>
     </aside>
   )
