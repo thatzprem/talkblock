@@ -3,7 +3,7 @@
 import { useState, useEffect } from "react"
 import { Sheet, SheetContent, SheetHeader, SheetTitle, SheetTrigger } from "@/components/ui/sheet"
 import { Button } from "@/components/ui/button"
-import { Sparkles, Rocket, User, Coins, Link2, ArrowLeftRight, ChevronRight } from "lucide-react"
+import { Sparkles, Rocket, User, Coins, Link2, ArrowLeftRight, ChevronRight, Zap } from "lucide-react"
 import { useWallet } from "@/lib/stores/wallet-store"
 
 const CATEGORIES = [
@@ -24,6 +24,20 @@ const CATEGORIES = [
       { label: "Account details", text: "Show me full details for the {account} account" },
       { label: "Recent transactions", text: "Show me recent transactions for {account}" },
       { label: "Staking info", text: "Show me staking information for {account}" },
+    ],
+  },
+  {
+    label: "Staking & Resources",
+    icon: Zap,
+    prompts: [
+      { label: "My staking info", text: "Show me staking information for {account}" },
+      { label: "Stake XPR for CPU", text: "Stake 10 XPR for CPU bandwidth from {account}" },
+      { label: "Stake XPR for NET", text: "Stake 10 XPR for NET bandwidth from {account}" },
+      { label: "Unstake CPU", text: "Unstake my XPR CPU resources for {account}" },
+      { label: "Unstake NET", text: "Unstake my XPR NET resources for {account}" },
+      { label: "Unstake all", text: "Unstake all my XPR CPU and NET resources for {account}" },
+      { label: "Check my resources", text: "Show me the CPU, NET, and RAM resources for {account}" },
+      { label: "Buy RAM", text: "Buy 4096 bytes of RAM for {account}" },
     ],
   },
   {

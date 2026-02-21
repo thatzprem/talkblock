@@ -14,7 +14,7 @@ import { useConversations } from "@/lib/stores/conversation-store"
 import { useCredits } from "@/lib/stores/credits-store"
 import { LLMSettings } from "@/components/settings/llm-settings"
 import { Button } from "@/components/ui/button"
-import { Bot, Settings, Wallet, Key, AlertCircle, Clock, Rocket, Coins, User, Link2, ArrowLeftRight, Sparkles, Heart } from "lucide-react"
+import { Bot, Settings, Wallet, Key, AlertCircle, Clock, Rocket, Coins, User, Link2, ArrowLeftRight, Sparkles, Heart, Zap } from "lucide-react"
 import { Avatar } from "@/components/ui/avatar"
 import { isToolUIPart, isReasoningUIPart, getToolName } from "ai"
 import { ToolResultRenderer } from "./cards/tool-result-renderer"
@@ -356,6 +356,13 @@ export function ChatPanel() {
                     prompts: [
                       { label: "XPR token price", text: "Get the current XPR token price" },
                       { label: "Total XPR supply", text: "What is the total supply of XPR?" },
+                    ],
+                  },
+                  {
+                    label: "Staking & Resources", icon: Zap,
+                    prompts: [
+                      { label: "Stake XPR for CPU", text: "Stake 10 XPR for CPU bandwidth from {account}" },
+                      { label: "Unstake all resources", text: "Unstake all my XPR CPU and NET resources for {account}" },
                     ],
                   },
                   {
