@@ -14,7 +14,7 @@ import { useConversations } from "@/lib/stores/conversation-store"
 import { useCredits } from "@/lib/stores/credits-store"
 import { LLMSettings } from "@/components/settings/llm-settings"
 import { Button } from "@/components/ui/button"
-import { Bot, Settings, Wallet, Key, AlertCircle, Clock, Rocket, Coins, User, Link2, ArrowLeftRight, Sparkles, Heart, Zap } from "lucide-react"
+import { Bot, Settings, Wallet, Key, AlertCircle, Clock, Rocket, Coins, User, Link2, ArrowLeftRight, Sparkles, Heart } from "lucide-react"
 import { Avatar } from "@/components/ui/avatar"
 import { isToolUIPart, isReasoningUIPart, getToolName } from "ai"
 import { ToolResultRenderer } from "./cards/tool-result-renderer"
@@ -321,13 +321,12 @@ export function ChatPanel() {
       <div className="flex-1 overflow-y-auto" ref={scrollRef}>
         <div className="max-w-3xl mx-auto py-4">
           {messages.length === 0 ? (
-            <div className="flex flex-col items-center justify-center gap-6 py-10 px-4">
-              <img src="/icon.png" className="h-14 w-14 dark:invert" alt="TalkToXPR" />
-              <div className="text-center space-y-1">
-                <h2 className="text-lg font-semibold">TalkTo<span className="font-normal">XPR</span></h2>
-                <p className="text-sm text-muted-foreground">Ask anything about the XPR Network blockchain</p>
+            <div className="flex flex-col items-center justify-center gap-2.5 py-4 px-4">
+              <div className="flex items-center gap-2">
+                <img src="/icon.png" className="h-6 w-6 dark:invert" alt="TalkToXPR" />
+                <p className="text-xs text-muted-foreground">Ask anything about XPR Network</p>
               </div>
-              <div className="w-full max-w-lg space-y-4">
+              <div className="w-full max-w-lg space-y-2">
                 {([
                   {
                     label: "Getting Started", icon: Rocket,
@@ -359,13 +358,6 @@ export function ChatPanel() {
                     ],
                   },
                   {
-                    label: "Staking & Resources", icon: Zap,
-                    prompts: [
-                      { label: "Stake XPR for CPU", text: "Stake 10 XPR for CPU bandwidth from {account}" },
-                      { label: "Unstake all resources", text: "Unstake all my XPR CPU and NET resources for {account}" },
-                    ],
-                  },
-                  {
                     label: "Transfers", icon: ArrowLeftRight,
                     prompts: [
                       { label: "Transfer XPR", text: "Transfer 1 XPR from {account} to " },
@@ -376,15 +368,15 @@ export function ChatPanel() {
                   const Icon = cat.icon
                   return (
                     <div key={cat.label}>
-                      <div className="flex items-center gap-1.5 mb-2">
-                        <Icon className="h-3 w-3 text-muted-foreground" />
-                        <span className="text-[11px] font-semibold uppercase tracking-wider text-muted-foreground">{cat.label}</span>
+                      <div className="flex items-center gap-1 mb-1">
+                        <Icon className="h-2.5 w-2.5 text-muted-foreground" />
+                        <span className="text-[10px] font-semibold uppercase tracking-wider text-muted-foreground">{cat.label}</span>
                       </div>
-                      <div className="grid grid-cols-2 gap-2">
+                      <div className="grid grid-cols-2 gap-1.5">
                         {cat.prompts.map((p) => (
                           <button
                             key={p.label}
-                            className="text-left text-sm px-3 py-2.5 rounded-lg border border-border hover:bg-muted hover:border-primary/40 transition-colors text-muted-foreground hover:text-foreground"
+                            className="text-left text-xs px-2.5 py-1.5 rounded-md border border-border hover:bg-muted hover:border-primary/40 transition-colors text-muted-foreground hover:text-foreground"
                             onClick={() => {
                               const resolved = accountName
                                 ? p.text.replace(/\{account\}/g, accountName)
@@ -400,23 +392,23 @@ export function ChatPanel() {
                   )
                 })}
               </div>
-              <p className="text-xs text-muted-foreground flex items-center gap-1">
-                <Sparkles className="h-3 w-3" />
+              <p className="text-[10px] text-muted-foreground flex items-center gap-1">
+                <Sparkles className="h-2.5 w-2.5" />
                 Tap the prompt library for more examples
               </p>
-              <div className="w-full max-w-lg rounded-lg border border-primary/20 bg-primary/5 p-3 flex items-center justify-between gap-3">
-                <div className="space-y-0.5 min-w-0">
-                  <p className="text-xs font-medium flex items-center gap-1.5">
+              <div className="w-full max-w-lg rounded-md border border-primary/20 bg-primary/5 px-3 py-2 flex items-center justify-between gap-2">
+                <div className="min-w-0">
+                  <p className="text-[11px] font-medium flex items-center gap-1.5">
                     <Heart className="h-3 w-3 text-primary shrink-0" />
                     Support TalkToXPR
                   </p>
-                  <p className="text-[11px] text-muted-foreground leading-snug">
-                    Built by <span className="font-mono font-medium text-foreground">protonIND</span>. Vote for us as a block producer to help sustain development.
+                  <p className="text-[10px] text-muted-foreground leading-snug">
+                    Built by <span className="font-mono font-medium text-foreground">ProtonIND</span>. Vote for us as a block producer.
                   </p>
                 </div>
                 <button
-                  className="shrink-0 text-[11px] px-2.5 py-1.5 rounded border border-primary/30 text-primary hover:bg-primary/10 transition-colors font-medium whitespace-nowrap"
-                  onClick={() => window.dispatchEvent(new CustomEvent("inject-prompt", { detail: "I want to vote for protonIND as a block producer on XPR Network. Please help me update my vote." }))}
+                  className="shrink-0 text-[10px] px-2 py-1 rounded border border-primary/30 text-primary hover:bg-primary/10 transition-colors font-medium whitespace-nowrap"
+                  onClick={() => window.dispatchEvent(new CustomEvent("inject-prompt", { detail: "I want to vote for ProtonIND as a block producer on XPR Network. Please help me update my vote." }))}
                 >
                   Vote now
                 </button>
@@ -542,6 +534,7 @@ export function ChatPanel() {
       <ChatInput
         onSend={handleSend}
         disabled={!isConfigured}
+        isProcessing={isLoading}
         placeholder={
           !endpoint
             ? "Connect to a chain first, or ask a general question..."

@@ -18,8 +18,8 @@ export function WalletButton() {
   if (!chainInfo) {
     return (
       <Button variant="outline" size="sm" disabled>
-        <Wallet className="h-4 w-4 mr-2" />
-        Connect Wallet
+        <Wallet className="h-4 w-4 sm:mr-2" />
+        <span className="hidden sm:inline">Connect Wallet</span>
       </Button>
     )
   }
@@ -29,8 +29,8 @@ export function WalletButton() {
       <DropdownMenu>
         <DropdownMenuTrigger asChild>
           <Button variant="outline" size="sm">
-            <Wallet className="h-4 w-4 mr-2 text-green-500" />
-            {accountName}
+            <Wallet className="h-4 w-4 text-green-500 sm:mr-2" />
+            <span className="hidden sm:inline">{accountName}</span>
           </Button>
         </DropdownMenuTrigger>
         <DropdownMenuContent align="end">
@@ -51,14 +51,14 @@ export function WalletButton() {
         onClick={connecting ? cancelLogin : login}
       >
         {connecting ? (
-          <Loader2 className="h-4 w-4 mr-2 animate-spin" />
+          <Loader2 className="h-4 w-4 animate-spin sm:mr-2" />
         ) : (
-          <Wallet className="h-4 w-4 mr-2" />
+          <Wallet className="h-4 w-4 sm:mr-2" />
         )}
-        {connecting ? "Cancel" : "Connect Wallet"}
+        <span className="hidden sm:inline">{connecting ? "Cancel" : "Connect Wallet"}</span>
       </Button>
       {error && (
-        <span className="text-xs text-destructive max-w-[200px] truncate" title={error}>
+        <span className="text-xs text-destructive max-w-[200px] truncate hidden sm:inline" title={error}>
           {error}
         </span>
       )}

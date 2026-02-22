@@ -1,6 +1,6 @@
 "use client"
 
-import { createContext, useContext, useState, ReactNode } from "react"
+import { createContext, useContext, useState, useEffect, ReactNode } from "react"
 
 type View = "chat" | "dashboard"
 
@@ -14,7 +14,11 @@ interface PanelState {
 const PanelContext = createContext<PanelState | null>(null)
 
 export function PanelProvider({ children }: { children: ReactNode }) {
-  const [leftOpen, setLeftOpen] = useState(true)
+  // Default closed; open on desktop after mount (avoids SSR hydration mismatch)
+  const [leftOpen, setLeftOpen] = useState(false)
+  useEffect(() => {
+    setLeftOpen(window.innerWidth >= 768)
+  }, [])
   const [view, setView] = useState<View>("chat")
 
   return (

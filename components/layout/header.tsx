@@ -54,6 +54,25 @@ function UsageIndicator() {
   const { user } = useAuth()
   const { llmMode } = useLLM()
   const { freeRemaining, balanceTokens } = useCredits()
+  const noCredits = freeRemaining === 0 && balanceTokens === 0
+  const [countdown, setCountdown] = useState("")
+
+  useEffect(() => {
+    if (!noCredits) { setCountdown(""); return }
+    const tick = () => {
+      const now = new Date()
+      const midnight = new Date()
+      midnight.setUTCHours(24, 0, 0, 0)
+      const diff = midnight.getTime() - now.getTime()
+      const h = Math.floor(diff / 3_600_000)
+      const m = Math.floor((diff % 3_600_000) / 60_000)
+      const s = Math.floor((diff % 60_000) / 1_000)
+      setCountdown(`${String(h).padStart(2, "0")}:${String(m).padStart(2, "0")}:${String(s).padStart(2, "0")}`)
+    }
+    tick()
+    const id = setInterval(tick, 1000)
+    return () => clearInterval(id)
+  }, [noCredits])
 
   if (!user || llmMode !== "builtin") return null
 
@@ -64,7 +83,12 @@ function UsageIndicator() {
       ) : balanceTokens > 0 ? (
         <>{Math.round(balanceTokens / 1000)}k tokens</>
       ) : (
-        <span className="text-yellow-600 dark:text-yellow-400">No credits</span>
+        <span className="inline-flex items-center gap-1.5 text-yellow-600 dark:text-yellow-400">
+          No credits
+          {countdown && (
+            <span className="text-muted-foreground font-mono">· resets in {countdown}</span>
+          )}
+        </span>
       )}
     </span>
   )
@@ -79,10 +103,10 @@ export function Header() {
   const { conversations, activeConversationId, setActiveConversation, createConversation, deleteConversation } = useConversations()
 
   return (
-    <header className="h-14 border-b flex items-center justify-between px-4 bg-background">
-      <div className="flex items-center gap-2">
-        <h1 className="text-lg font-semibold flex items-center gap-1.5">
-          <img src="/icon.png" className="h-6 w-6 dark:invert" alt="TalkToXPR" />
+    <header className="h-14 border-b flex items-center justify-between px-2 sm:px-4 bg-background">
+      <div className="flex items-center gap-1 sm:gap-2">
+        <h1 className="text-sm sm:text-lg font-semibold flex items-center gap-1.5">
+          <img src="/icon.png" className="h-5 w-5 sm:h-6 sm:w-6 dark:invert" alt="TalkToXPR" />
           <span>TalkTo<span className="font-normal">XPR</span></span>
         </h1>
         <Dialog open={settingsOpen} onOpenChange={setSettingsOpen}>
@@ -145,45 +169,45 @@ export function Header() {
         <Button variant="ghost" size="icon" onClick={toggleLeft}>
           <PanelLeft className="h-4 w-4" />
         </Button>
-        <div className="flex items-center border rounded-md overflow-hidden ml-2">
+        <div className="flex items-center border rounded-md overflow-hidden ml-1 sm:ml-2">
           <Button
             variant={view === "chat" ? "secondary" : "ghost"}
             size="sm"
-            className="rounded-none h-7 px-2.5 text-xs"
+            className="rounded-none h-7 px-2 sm:px-2.5 text-xs"
             onClick={() => setView("chat")}
           >
-            <MessageSquare className="h-3.5 w-3.5 mr-1" />
-            Chat
+            <MessageSquare className="h-3.5 w-3.5 sm:mr-1" />
+            <span className="hidden sm:inline">Chat</span>
           </Button>
           <Button
             variant={view === "dashboard" ? "secondary" : "ghost"}
             size="sm"
-            className="rounded-none h-7 px-2.5 text-xs"
+            className="rounded-none h-7 px-2 sm:px-2.5 text-xs"
             onClick={() => setView("dashboard")}
           >
-            <LayoutDashboard className="h-3.5 w-3.5 mr-1" />
-            Dashboard
+            <LayoutDashboard className="h-3.5 w-3.5 sm:mr-1" />
+            <span className="hidden sm:inline">Dashboard</span>
           </Button>
           <Button
             variant="ghost"
             size="sm"
-            className="rounded-none h-7 px-2.5 text-xs border-l"
+            className="rounded-none h-7 px-2 sm:px-2.5 text-xs border-l"
             onClick={() => window.dispatchEvent(new CustomEvent("open-prompt-library"))}
             title="Prompt Library"
           >
-            <Sparkles className="h-3.5 w-3.5 mr-1" />
-            Prompts
+            <Sparkles className="h-3.5 w-3.5 sm:mr-1" />
+            <span className="hidden sm:inline">Prompts</span>
           </Button>
         </div>
       </div>
-      <div className="flex items-center gap-2">
+      <div className="flex items-center gap-1 sm:gap-2">
         <UsageIndicator />
         {user && (
           <DropdownMenu>
             <DropdownMenuTrigger asChild>
               <Button variant="outline" size="sm">
-                <MessageSquare className="h-4 w-4 mr-2" />
-                Chats
+                <MessageSquare className="h-4 w-4 sm:mr-2" />
+                <span className="hidden sm:inline">Chats</span>
               </Button>
             </DropdownMenuTrigger>
             <DropdownMenuContent align="end" className="w-64">

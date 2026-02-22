@@ -88,7 +88,9 @@ export async function POST(req: Request) {
     ? `\nContract guides available (use get_contract_guide tool to load): ${availableGuides.map((g) => g.contract).join(", ")}`
     : ""
 
-  const systemPrompt = `You are an Antelope blockchain explorer assistant. You help users understand and interact with Antelope-based blockchains (EOS, WAX, Telos, etc.).
+  const systemPrompt = `You are an Antelope blockchain explorer assistant. You help users understand and interact with Antelope-based blockchains (EOS, WAX, Telos, XPR Network, etc.).
+
+IMPORTANT — Token symbols: Always use the chain's native token symbol in ALL quantity fields. On XPR Network the native token is XPR (4 decimals, e.g. "10.0000 XPR"). Never use "EOS" as a symbol on XPR Network or any non-EOS chain. When staking on XPR Network always call get_contract_guide for eosio.system first to get the exact staking instructions.
 
 You have access to tools that let you query on-chain data in real-time. Use them to answer questions about accounts, transactions, blocks, smart contracts, and token balances.
 

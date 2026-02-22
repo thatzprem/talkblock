@@ -31,11 +31,6 @@ const CATEGORIES = [
     icon: Zap,
     prompts: [
       { label: "My staking info", text: "Show me staking information for {account}" },
-      { label: "Stake XPR for CPU", text: "Stake 10 XPR for CPU bandwidth from {account}" },
-      { label: "Stake XPR for NET", text: "Stake 10 XPR for NET bandwidth from {account}" },
-      { label: "Unstake CPU", text: "Unstake my XPR CPU resources for {account}" },
-      { label: "Unstake NET", text: "Unstake my XPR NET resources for {account}" },
-      { label: "Unstake all", text: "Unstake all my XPR CPU and NET resources for {account}" },
       { label: "Check my resources", text: "Show me the CPU, NET, and RAM resources for {account}" },
       { label: "Buy RAM", text: "Buy 4096 bytes of RAM for {account}" },
     ],
@@ -93,7 +88,7 @@ export function PromptLibrary() {
         <Button
           variant="secondary"
           size="icon"
-          className="fixed bottom-24 right-6 z-50 h-11 w-11 rounded-full shadow-lg border border-border"
+          className="fixed bottom-28 sm:bottom-24 right-6 z-50 h-11 w-11 rounded-full shadow-lg border border-border"
           title="Prompt Library"
         >
           <Sparkles className="h-5 w-5" />

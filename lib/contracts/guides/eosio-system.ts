@@ -8,15 +8,18 @@ export const eosioSystem: ContractGuide = {
 
 ## Staking (CPU / NET)
 
-### delegatebw — Stake tokens for CPU and NET
+CRITICAL: ALL quantity fields (stake_net_quantity, stake_cpu_quantity, unstake_net_quantity, unstake_cpu_quantity) MUST use the chain's native token symbol and precision. Never use "EOS" on a non-EOS chain. On XPR Network use "XPR" with 4 decimal places (e.g. "10.0000 XPR"). Both quantity fields in the same action MUST have the exact same symbol — mixing symbols causes an "comparison of assets with different symbols" error.
+
+### delegatebw — Stake tokens for CPU and/or NET
 - account: "eosio"
 - action: "delegatebw"
 - data:
   - from: (account paying)
   - receiver: (account receiving resources, can be same as from)
-  - stake_net_quantity: "1.0000 EOS" (must match chain token precision+symbol)
-  - stake_cpu_quantity: "1.0000 EOS"
+  - stake_net_quantity: "0.0000 XPR" (use chain token symbol; set to "0.0000 [TOKEN]" if user only wants to stake for CPU)
+  - stake_cpu_quantity: "10.0000 XPR" (use chain token symbol)
   - transfer: false (true = gift the staked tokens to receiver)
+- SIMPLE STAKE RULE: When a user says "stake X [TOKEN]" without specifying CPU or NET, put the FULL amount into CPU and set NET to "0.0000 [TOKEN]". Do NOT split unless the user asks. Both fields must use the same symbol.
 
 ### undelegatebw — Unstake tokens
 - account: "eosio"
@@ -24,9 +27,10 @@ export const eosioSystem: ContractGuide = {
 - data:
   - from: (account that originally staked)
   - receiver: (account to unstake from)
-  - unstake_net_quantity: "1.0000 EOS"
-  - unstake_cpu_quantity: "1.0000 EOS"
+  - unstake_net_quantity: "0.0000 XPR" (use chain token symbol; set to "0.0000 [TOKEN]" if user only unstakes CPU)
+  - unstake_cpu_quantity: "10.0000 XPR" (use chain token symbol)
 - NOTE: Unstaked tokens have a 3-day refund period on most chains.
+- SIMPLE UNSTAKE RULE: When a user says "unstake X [TOKEN]" without specifying CPU or NET, query the account's current staked resources first (get_account), then unstake from whichever resource has sufficient balance. Set the other to "0.0000 [TOKEN]".
 
 ## RAM
 
@@ -193,6 +197,7 @@ All REX tables use code="eosio" and scope="eosio". To get a specific account's r
 - NOTE: Powerup is the modern way to get CPU/NET on EOS mainnet. Staking still works but powerup is cheaper for temporary usage.
 
 ## Common Token Precisions
+- XPR (XPR Network): 4 decimals, symbol "XPR" → "1.0000 XPR"
 - EOS: 4 decimals, symbol "EOS" → "1.0000 EOS"
 - WAX: 8 decimals, symbol "WAX" → "1.00000000 WAX"
 - TLOS: 4 decimals, symbol "TLOS" → "1.0000 TLOS"
