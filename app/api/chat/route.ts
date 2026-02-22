@@ -72,7 +72,9 @@ export async function POST(req: Request) {
   }
 
   let llmModel = createLLMModel(llmProvider, llmApiKey, llmModelName)
-  if (llmProvider === "chutes") {
+  // Only apply reasoning middleware to models that actually produce reasoning content (R1 variants).
+  // Applying it to non-reasoning models (e.g. DeepSeek-V3) corrupts the step-2 tool result messages.
+  if (llmProvider === "chutes" && /r1/i.test(llmModelName)) {
     llmModel = wrapLanguageModel({
       model: llmModel,
       middleware: extractReasoningMiddleware({ tagName: "think" }),
@@ -136,28 +138,6 @@ ${walletAccount ? `The user's connected wallet account is: ${walletAccount}. Whe
     },
   }
 
-  const getErrorMessage = (error: unknown): string => {
-    console.error("[chat/route] Streaming error:", error)
-    if (error instanceof Error) {
-      if (error.message.includes("402") || error.message.includes("credit") || error.message.includes("quota")) {
-        return "You have run out of credits. Please check your settings."
-      }
-      if (error.message.includes("401") || error.message.includes("Unauthorized") || error.message.includes("API key")) {
-        return "Invalid API key. Please check your LLM settings."
-      }
-      if (error.message.includes("400") || error.message.includes("Bad Request")) {
-        return "The AI model returned an error processing your request. Please try rephrasing your question."
-      }
-      if (error.message.includes("429") || error.message.includes("rate limit") || error.message.includes("Too Many")) {
-        return "Rate limit reached. Please wait a moment and try again."
-      }
-      if (error.message.includes("timeout") || error.message.includes("ETIMEDOUT")) {
-        return "Request timed out. Please try again."
-      }
-    }
-    return "An unexpected error occurred. Please try again."
-  }
-
   const result = streamText({
     model: llmModel,
     ...streamConfig,
@@ -165,5 +145,5 @@ ${walletAccount ? `The user's connected wallet account is: ${walletAccount}. Whe
       console.error("[chat/route] streamText error:", error)
     },
   })
-  return result.toUIMessageStreamResponse({ getErrorMessage })
+  return result.toUIMessageStreamResponse()
 }

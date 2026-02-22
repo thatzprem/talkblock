@@ -519,7 +519,7 @@ export function createChainTools(endpoint: string | null, hyperionEndpoint: stri
         try {
           const result = await hyperion.getDeltas({
             code, table, scope, payer,
-            limit: limit || 20, skip, sort, after, before,
+            limit: limit || 20, skip, sort: sort as "asc" | "desc" | undefined, after, before,
           })
           // Trim oversized data fields to reduce token usage
           const deltas = (result.deltas || []).map((d: any) => {
@@ -650,7 +650,7 @@ export function createChainTools(endpoint: string | null, hyperionEndpoint: stri
       execute: async ({ account, direction, symbol, contract, limit }) => {
         try {
           const result = await hyperion.getTransactedAccounts({
-            account, direction, symbol, contract, limit,
+            account, direction: direction as "in" | "out" | "both", symbol, contract, limit,
           })
           return {
             accounts: result.accounts || [],
